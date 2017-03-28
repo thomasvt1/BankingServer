@@ -64,6 +64,10 @@ public class ApiHandler {
 
 		if (parameters.get("key") == null)
 			return false;
+		
+		//TODO: Disable debug
+		if (parameters.get("key").matches("debug"))
+			return true;
 
 		return new Tools().matchRequestKey(parameters.get("key"));
 	}
