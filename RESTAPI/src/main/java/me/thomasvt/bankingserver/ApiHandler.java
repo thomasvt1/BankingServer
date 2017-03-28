@@ -28,8 +28,9 @@ public class ApiHandler {
 		return new JSONObject().put("error", "We Don't Know What Happened Bank");
 	}
 	
+
 	/*
-	 * Returns the IP of the connection. Even when behind (Apache) proxy.
+	 * Returns the IP of the connection. Even when behind (Apache) reverse-proxy.
 	 */
 	private String getIp(Request req) {
 		if (SystemUtils.IS_OS_LINUX)

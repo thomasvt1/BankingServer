@@ -9,6 +9,17 @@ class ActionParser {
 		Map<String, String> parameters = new Tools().queryToMap(query);
 		String action = parameters.get("action");
 		
+		int auth = new Tools().authUser(parameters);
+		
+		if (auth != 0) {
+			JSONObject response = new JSONObject();
+			
+			response.put("tries", 2);
+			
+			return response.put("error", new Tools().getErrorMessage(auth));
+			//return new JSONObject().put("error", new Tools().getErrorMessage(auth));
+		}
+		
 		if (action.matches("getJson"))
 			return getJson(parameters);
 		if (action.matches("getBalance"))

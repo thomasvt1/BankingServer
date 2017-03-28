@@ -9,12 +9,6 @@ class ActionWithdrawMoney {
 	public JSONObject withdrawMoney(Map<String, String> parameters) {
 		JSONObject response = new JSONObject();
 		
-		int auth = new Tools().authUser(parameters);
-		
-		if (auth != 0) {
-			return new JSONObject().put("error", new Tools().getErrorMessage(auth));
-		}
-		
 		if (!new Tools().isDouble(parameters.get("amount")))
 			return new JSONObject().put("error", "amount not a double");
 		
