@@ -9,16 +9,30 @@ class ActionParser {
 		Map<String, String> parameters = new Tools().queryToMap(query);
 		String action = parameters.get("action");
 		
-		int auth = new Tools().authUser(parameters);
+		String cardid = parameters.get("user");
+		
+		int auth = new Tools().authUser(cardid, parameters.get("pin"));
+		
+		if (new UserManagement().cardBlocked(cardid))
+			return new JSONObject().put("error", "card blocked");
 		
 		if (auth != 0) {
 			JSONObject response = new JSONObject();
 			
-			response.put("tries", 2);
+			new UserManagement().increaseTries(cardid);
 			
-			return response.put("error", new Tools().getErrorMessage(auth));
-			//return new JSONObject().put("error", new Tools().getErrorMessage(auth));
+			int tries = new UserManagement().getTries(cardid);
+			
+			if (tries == 3)
+				new UserManagement().blockCard(cardid);
+				
+			response.put("tries", tries);
+			response.put("error", new Tools().getErrorMessage(auth));
+			
+			return response;
 		}
+		
+		new UserManagement().resetTries(cardid);
 		
 		if (action.matches("getJson"))
 			return getJson(parameters);

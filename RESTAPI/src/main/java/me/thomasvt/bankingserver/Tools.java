@@ -17,14 +17,11 @@ public class Tools {
 	 * 3: No user
 	 * 4: Pin incorrect
 	 */
-	int authUser(Map<String, String> parameters) {
-		if (parameters.get("user") == null)
+	int authUser(String cardid, String pin) {
+		if (cardid == null)
 			return 1; //no user provided
-		if (parameters.get("pin") == null)
+		if (pin == null)
 			return 2; //no pin provided
-		
-		String cardid = parameters.get("user");
-		String pin = parameters.get("pin");
 		
 		if (!new UserManagement().accountExists(cardid))
 			return 3; //no user

@@ -17,7 +17,7 @@ class UserManagement {
 
             stmt.addBatch("INSERT INTO `user` (`userid`) VALUES ("+newUserID+");");
             //stmt.addBatch("INSERT INTO `userinfo` (`userid`, `firstname`, `lastname`) VALUES ('"+newUserID+"', '"+firstName+"', '"+lastName+"');");
-            stmt.addBatch("INSERT INTO `card` (`userid`, `cardid`, `pinhash`, `trys`, `blocked`) VALUES ('"+newUserID+"', '"+cardID+"', '"+hashedPin+"', '0', '0');");
+            stmt.addBatch("INSERT INTO `card` (`userid`, `cardid`, `pinhash`, `tries`, `blocked`) VALUES ('"+newUserID+"', '"+cardID+"', '"+hashedPin+"', '0', '0');");
             //stmt.addBatch("INSERT INTO `money` (`userid`, `balance`) VALUES ('"+newUserID+"', '"+money+"');");
             stmt.executeBatch();
 
@@ -34,6 +34,45 @@ class UserManagement {
 
     void removeMoney(String cardid, double money) {
         String sql = "UPDATE account,card SET balance = balance - "+money+" WHERE account.accountid=card.accountid AND card.carduuid='"+cardid+"'";
+
+        App.getDatabase().createStatement(sql);
+    }
+    
+    int getTries(String cardid) {
+    	String sql = "SELECT `tries` FROM `card` WHERE `carduuid` = '"+cardid+"'";
+        
+        return Integer.parseInt(App.getDatabase().selectStatement(sql));
+    }
+    
+    boolean cardBlocked(String cardid) {
+    	String sql = "SELECT `blocked` FROM `card` WHERE `carduuid` = '"+cardid+"'";
+        String response = App.getDatabase().selectStatement(sql);
+        if (response.matches("1"))
+        	return true;
+        else
+        	return false;
+    }
+    
+    void increaseTries(String cardid) {
+    	String sql = "UPDATE `card` SET `tries` = `tries` + 1 WHERE `card`.`carduuid` = '"+cardid+"'";
+
+        App.getDatabase().createStatement(sql);
+    }
+    
+    void blockCard(String cardid) {
+    	String sql = "UPDATE `card` SET `blocked` = '1' WHERE `card`.`carduuid` = '"+cardid+"'";
+
+        App.getDatabase().createStatement(sql);
+    }
+    
+    void unblockCard(String cardid) {
+    	String sql = "UPDATE `card` SET `blocked` = '0' WHERE `card`.`carduuid` = '"+cardid+"'";
+
+        App.getDatabase().createStatement(sql);
+    }
+    
+    void resetTries(String cardid) {
+    	String sql = "UPDATE `card` SET `tries` = '1' WHERE `card`.`carduuid` = '"+cardid+"'";
 
         App.getDatabase().createStatement(sql);
     }
