@@ -5,7 +5,7 @@ import java.util.Map;
 import org.json.JSONObject;
 
 class ActionParser {
-	String actionParser(String query) {
+	JSONObject actionParser(String query) {
 		Map<String, String> parameters = new Tools().queryToMap(query);
 		String action = parameters.get("action");
 		
@@ -16,10 +16,10 @@ class ActionParser {
 		if (action.matches("withdrawMoney"))
 			return new ActionWithdrawMoney().withdrawMoney(parameters);
 		
-		return new Tools().getJsonWithError("invalid action");
+		return new JSONObject().put("error", "invalid action");
 	}
 	
-	private String getJson(Map<String, String> parameters) {
-		return new JSONObject(parameters).toString();
+	private JSONObject getJson(Map<String, String> parameters) {
+		return new JSONObject(parameters);
 	}
 }

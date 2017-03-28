@@ -1,36 +1,39 @@
 package me.thomasvt.bankingserver;
 
-import java.util.HashMap;
 import java.util.Map;
+
+import org.json.JSONObject;
 
 class ActionWithdrawMoney {
 
-	public String withdrawMoney(Map<String, String> parameters) {
-		Map<String, String> response = new HashMap<String, String>();
+	public JSONObject withdrawMoney(Map<String, String> parameters) {
+		JSONObject response = new JSONObject();
 		
-		String auth = new Tools().authUserOrReturnError(parameters);
-		if (!auth.matches("OK"))
-			return auth;
+		int auth = new Tools().authUser(parameters);
+		
+		if (auth != 0) {
+			return new JSONObject().put("error", new Tools().getErrorMessage(auth));
+		}
 		
 		if (!new Tools().isDouble(parameters.get("amount")))
-			return new Tools().getJsonWithError("amount not double");
+			return new JSONObject().put("error", "amount not a double");
 		
 		String cardid = parameters.get("user");
 		double balance = new UserManagement().getBalance(cardid);
 		double amountToWithdraw = Double.parseDouble(parameters.get("amount"));
 		
 		if (balance < amountToWithdraw)
-			return new Tools().getJsonWithError("not enough balance");
+			return new JSONObject().put("error", "not enough balance");
 		if (amountToWithdraw < 0)
-			return new Tools().getJsonWithError("can not withdraw negative amount");
+			return new JSONObject().put("error", "can not withdraw negative amount");
 		if (amountToWithdraw < 1)
-			return new Tools().getJsonWithError("can not withdraw too small amount");
+			return new JSONObject().put("error", "can not withdraw too small amount");
 		
 		new UserManagement().removeMoney(cardid, amountToWithdraw);
 		
 		response.put("balance", (balance - amountToWithdraw) + "");
 		response.put("response", "success");
 		
-		return response.toString();
+		return response;
 	}
 }

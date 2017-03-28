@@ -10,6 +10,52 @@ import org.json.JSONObject;
 public class Tools {
 	
 	/*
+	 * Returns the auth status of the user.
+	 * 0: Pin OK
+	 * 1: No user provided
+	 * 2: No pin provided
+	 * 3: No user
+	 * 4: Pin incorrect
+	 */
+	int authUser(Map<String, String> parameters) {
+		if (parameters.get("user") == null)
+			return 1; //no user provided
+		if (parameters.get("pin") == null)
+			return 2; //no pin provided
+		
+		String cardid = parameters.get("user");
+		String pin = parameters.get("pin");
+		
+		if (!new UserManagement().accountExists(cardid))
+			return 3; //no user
+
+		boolean auth = pinCorrect(cardid, pin);
+
+		if (auth)
+			return 0; //OK
+		else
+			return 4; //pin incorrect
+	}
+	
+	String getErrorMessage(int code) {
+		String message = "";
+		if (code == 0)
+			message = "OK";
+		else if (code == 1)
+			message = "No user provided";
+		else if (code == 2)
+			message = "No pin provided";
+		else if (code == 3)
+			message = "No user";
+		else if (code == 4)
+			message = "Pin incorrect";
+		else
+			message = "no error message";
+		
+		return message;
+	}
+	
+	/*
 	 * Returns 'OK' when user is authenticated. Else will return (Json) string why not.
 	 */
 	String authUserOrReturnError(Map<String, String> parameters) {

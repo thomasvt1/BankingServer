@@ -1,21 +1,23 @@
 package me.thomasvt.bankingserver;
 
-import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
+
 class ActionGetBalance {
-	String getBalance(Map<String, String> parameters) {
-		Map<String, String> response = new HashMap<String, String>();
+	JSONObject getBalance(Map<String, String> parameters) {
+		JSONObject response = new JSONObject();
 		
-		String auth = new Tools().authUserOrReturnError(parameters);
-		if (!auth.matches("OK"))
-			return auth;
+		int auth = new Tools().authUser(parameters);
+		
+		if (auth != 0)
+			return new JSONObject().put("error", new Tools().getErrorMessage(auth));
 		
 		String cardid = parameters.get("user");
 		
 		int balance = (int) (new UserManagement().getBalance(cardid) * 100);
 		
 		response.put("balance", balance+"");
-		return response.toString();
+		return response;
 	}
 }

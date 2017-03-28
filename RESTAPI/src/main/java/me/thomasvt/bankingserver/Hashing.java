@@ -2,8 +2,8 @@ package me.thomasvt.bankingserver;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import org.bouncycastle.jcajce.provider.digest.SHA3.DigestSHA3;
 import org.bouncycastle.util.encoders.Hex;
+import org.bouncycastle.jcajce.provider.digest.SHA3.DigestSHA3;
 
 public class Hashing {
 
@@ -19,7 +19,7 @@ public class Hashing {
 
     protected String hashString(String string, Size s, boolean bouncyencoder) {
         Size size = s == null ? DEFAULT : s;
-
+        
         DigestSHA3 md = new DigestSHA3(size.getValue());
         String text = string != null ? string : "null";
         try {
