@@ -25,7 +25,9 @@ class ActionWithdrawMoney {
 		
 		new UserManagement().removeMoney(cardid, amountToWithdraw);
 		
-		response.put("balance", (balance - amountToWithdraw) + "");
+		int finalmoney = (int) ((balance - amountToWithdraw) * 100);
+		
+		response.put("balance", finalmoney + "");
 		response.put("response", "success");
 		
 		return response;

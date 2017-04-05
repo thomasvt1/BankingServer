@@ -45,9 +45,10 @@ class UserManagement {
     }
     
     boolean cardBlocked(String cardid) {
-    	String sql = "SELECT `blocked` FROM `card` WHERE `carduuid` = '"+cardid+"'";
+    	String sql = "SELECT `tries` FROM `card` WHERE `carduuid` = '"+cardid+"'";
+        
         String response = App.getDatabase().selectStatement(sql);
-        if (response.matches("1"))
+        if (response.matches("3"))
         	return true;
         else
         	return false;
@@ -72,7 +73,7 @@ class UserManagement {
     }
     
     void resetTries(String cardid) {
-    	String sql = "UPDATE `card` SET `tries` = '1' WHERE `card`.`carduuid` = '"+cardid+"'";
+    	String sql = "UPDATE `card` SET `tries` = '0' WHERE `card`.`carduuid` = '"+cardid+"'";
 
         App.getDatabase().createStatement(sql);
     }
@@ -80,7 +81,7 @@ class UserManagement {
     boolean accountExists(String cardid) {
     	String sql = "SELECT accountid FROM `card` WHERE `carduuid` LIKE '"+cardid+"'";
         String s = App.getDatabase().selectStatement(sql);
-
+        
         return s != null;
     }
 
