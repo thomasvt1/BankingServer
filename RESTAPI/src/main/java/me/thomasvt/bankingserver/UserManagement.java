@@ -102,6 +102,7 @@ class UserManagement {
     	sql = sql.replace("{m}", money+ "").replace("{uuid}", cardid);
     	
         App.getDatabase().createStatement(sql);
+        log(0, cardid, "DEPOSIT", money);
     }
 
     void removeMoney(String cardid, double money) {
@@ -109,6 +110,7 @@ class UserManagement {
     	sql = sql.replace("{m}", money+ "").replace("{uuid}", cardid);
 
         App.getDatabase().createStatement(sql);
+        log(0, cardid, "WITHDRAW", money);
     }
     
     int getTries(String cardid) {
@@ -128,6 +130,7 @@ class UserManagement {
     
     void increaseTries(String cardid) {
     	String sql = "UPDATE `card` SET `tries` = `tries` + 1 WHERE `card`.`carduuid` = '"+cardid+"'";
+    	log(0, cardid, "WRONGPIN", 0);
 
         App.getDatabase().createStatement(sql);
     }
@@ -184,6 +187,23 @@ class UserManagement {
         String sql = "SELECT `pinhash` FROM `card` WHERE `carduuid` = '"+cardid+"'";
         return App.getDatabase().selectStatement(sql);
     }
+    
+    private void log(int userid, String carduuid, String action, double amount) {
+    	if (userid == 0)
+    		userid = getAccountId(carduuid);
+    	
+    	String sql = "INSERT INTO `log` VALUES (NULL, 'USERID', 'CARDUUID', 'ACTION', AMOUNT, CURRENT_TIMESTAMP)";
+    	
+    	sql = sql.replace("USERID", userid + "");
+    	sql = sql.replace("CARDUUID", carduuid);
+    	sql = sql.replace("ACTION", action);
+    	if (amount == 0)
+    		sql = sql.replace("AMOUNT", "NULL");
+    	else
+    		sql = sql.replace("AMOUNT", "'"+ amount + "'");
+    	
+    	App.getDatabase().createStatement(sql);
+    }
 
     void setPin(User user, String carduuid, String pin) {
         try {
@@ -191,6 +211,8 @@ class UserManagement {
             String sql = "UPDATE `card` SET `pinhash` = '"+hashedPin+"' WHERE `card`.`carduuid` = '"+carduuid+"';";
 
             App.getDatabase().createStatement(sql);
+            
+            log(0, carduuid, "SETPIN", 0);
 
         } catch (Exception e) {
             e.printStackTrace();

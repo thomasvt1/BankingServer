@@ -16,6 +16,4 @@ public class CardCheck {
 		response.put("exists", exists);
 		return response;
 	}
-	
-
 }
