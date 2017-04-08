@@ -14,7 +14,7 @@ class ActionParser {
 		if (action.matches("cardCheck"))
 			return new CardCheck().cardExists(parameters);
 		
-		boolean cardExists = new UserManagement().accountExists(cardid);
+		boolean cardExists = new UserManagement().cardExists(cardid);
 		
 		if (!cardExists)
 			return new JSONObject().put("error", "cardid not in database");
@@ -32,7 +32,6 @@ class ActionParser {
 			int tries = new UserManagement().getTries(cardid);
 			
 			if (tries == 3) {
-				new UserManagement().blockCard(cardid);
 				return new JSONObject().put("error", "card blocked").put("tries", 3);
 			}
 				

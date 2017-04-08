@@ -8,7 +8,7 @@ import com.mysql.jdbc.CommunicationsException;
 public class Database {
 	
 	private final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	private final String DB_URL = "jdbc:mysql://bank.ccx9175trsi7.eu-west-2.rds.amazonaws.com:3306/bank";
+	private final String DB_URL = "jdbc:mysql://localhost:3306/bank";
 	   
 	private final String USER = "bank";
 	private final String PASS = "gpkdN29HZ4fvjtS2";

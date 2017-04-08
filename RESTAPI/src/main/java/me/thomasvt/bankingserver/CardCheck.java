@@ -11,7 +11,7 @@ public class CardCheck {
 		
 		String cardid = parameters.get("user");
 		
-		boolean exists = new UserManagement().accountExists(cardid);
+		boolean exists = new UserManagement().cardExists(cardid);
 		
 		response.put("exists", exists);
 		return response;

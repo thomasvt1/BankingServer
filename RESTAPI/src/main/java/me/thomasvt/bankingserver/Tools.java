@@ -23,7 +23,7 @@ public class Tools {
 		if (pin == null)
 			return 2; //no pin provided
 		
-		if (!new UserManagement().accountExists(cardid))
+		if (!new UserManagement().cardExists(cardid))
 			return 3; //no user
 
 		boolean auth = pinCorrect(cardid, pin);
@@ -64,7 +64,7 @@ public class Tools {
 		String cardid = parameters.get("user");
 		String pin = parameters.get("pin");
 		
-		if (!new UserManagement().accountExists(cardid))
+		if (!new UserManagement().cardExists(cardid))
 			return new Tools().getJsonWithError("no user");
 
 		boolean auth = pinCorrect(cardid, pin);
@@ -75,8 +75,20 @@ public class Tools {
 			return new Tools().getJsonWithError("pin incorrect");
 	}
 
-	private String getSaltedPin(String cardid, String pin) {
-		return new Hashing().hashString(pin);
+	public String getSaltedPin(User user, String carduuid, String pin) {
+		int i = Integer.parseInt(pin);
+		int x = user.getLastname().length();
+		
+		int y = ((x * i) + i) * x;
+		
+		String toBeHashed = "{g}{x}{y}{z}";
+		toBeHashed = toBeHashed.replace("g", user.getFirstname().toUpperCase());
+		toBeHashed = toBeHashed.replace("x", y + "");
+		toBeHashed = toBeHashed.replace("y", user.getLastname() + user.getFirstname().toUpperCase());
+		toBeHashed = toBeHashed.replace("z", y + carduuid + carduuid);
+		
+		
+		return new Hashing().hashString(toBeHashed);
 	}
 
 	protected boolean isDouble(String s) {
@@ -130,16 +142,17 @@ public class Tools {
 	 * user: userid (String) int
 	 * encryptedPin (String) encrypted/decrypted pincode (4 long)
 	 */
-	boolean pinCorrect(String cardid, String pin) {
-		String pinHash = new UserManagement().getPinHash(cardid);
+	boolean pinCorrect(String carduuid, String pin) {
 		boolean auth = false;
+		String pinHash = new UserManagement().getPinHash(carduuid);
+		User user = new UserManagement().getUser(carduuid);
 		if (pin.length() == 4) {
-			String saltedPin = getSaltedPin(cardid, pin);
+			String saltedPin = getSaltedPin(user, carduuid, pin);
 			if (saltedPin.matches(pinHash))
 				auth = true;
 		} else {
 			String decryptedPin = new Encryption("gXbB9%kXrg6cxh#y").tryDecrypt(pin);
-			String saltedPin = getSaltedPin(cardid, decryptedPin);
+			String saltedPin = getSaltedPin(user, carduuid, decryptedPin);
 			if (saltedPin.matches(pinHash))
 				auth = true;
 		}
