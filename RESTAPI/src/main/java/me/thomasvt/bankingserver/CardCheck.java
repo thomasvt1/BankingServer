@@ -13,6 +13,9 @@ public class CardCheck {
 		
 		boolean exists = new UserManagement().cardExists(cardid);
 		
+		if (exists)
+			response.put("tries", new UserManagement().getTries(cardid));
+		
 		response.put("exists", exists);
 		return response;
 	}
