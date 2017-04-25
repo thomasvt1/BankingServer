@@ -7,4 +7,4 @@ jdk:
 notifications:
   email: false
 
-script: "cd RESTAPI && mvn clean verify -source 8"
+script: "cd RESTAPI && mvn clean verify"
