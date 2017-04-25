@@ -3,5 +3,8 @@ sudo: false # faster builds
 
 jdk:
   - oraclejdk8
+  
+notifications:
+  email: false
 
 script: "cd RESTAPI && mvn clean verify"
