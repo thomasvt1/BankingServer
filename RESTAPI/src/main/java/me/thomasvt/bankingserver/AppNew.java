@@ -17,6 +17,8 @@ import spark.Request;
 public class AppNew {
 
 	HashMap<String, String> hmap = new HashMap<String, String>();
+	
+	static TokenManager tm;
 
 	static void log(String s) {
 		System.out.println(s);
@@ -49,16 +51,7 @@ public class AppNew {
 			return api.handle(req);
 		});
 
-		get("/lol", (req, res) -> {
-			JSONObject response = new JSONObject();
-
-			response.put("testing", true);
-			response.put("balance", "500");
-			response.put("response", "success");
-
-			return response;
-		});
-
+		/*
 		get("/balance/:user/:pin", (req, res) -> {
 			Map<String, String> map = requestToMap(req);
 
@@ -88,9 +81,154 @@ public class AppNew {
 
 			return new ActionWithdrawMoney().withdrawMoney(map);
 		});
-
-		get("/token/:user/:pin", (req, res) -> {
-			return requestToMap(req);
+		 */
+		
+		get("/token", (req, res) -> {
+			//TODO: Auth
+			
+			return tm.getNewToken();
+		});
+		
+		get("/token/validated", (req, res) -> {
+			//TODO: Auth
+			
+			TokenManager tm = new TokenManager();
+			//TODO: Token check
+			String token = req.headers("token");
+			
+			if (token == null)
+				return new Tools().getJsonWithError("no token provided");
+			
+			if (!tm.tokenInDatabase(token))
+				return new Tools().getJsonWithError("token not in database");
+			
+			JSONObject response = new JSONObject();
+			response.put("status", true);
+			return response;
+			
+			
+		});
+		
+		get("/card/:UUID", (req, res) -> {
+			Map<String, String> map = requestToMap(req);
+			
+			TokenManager tm = new TokenManager();
+			String token = req.headers("token");
+			
+			if (token == null)
+				return new Tools().getJsonWithError("no token provided");
+			
+			if (!tm.tokenInDatabase(token))
+				return new Tools().getJsonWithError("token not in database");
+			
+			String card = map.get("uuid");
+			
+			return new UserManagement().cardExists(card);
+		});
+		
+		get("/card/:UUID/enabled", (req, res) -> {
+			Map<String, String> map = requestToMap(req);
+			
+			TokenManager tm = new TokenManager();
+			String token = req.headers("token");
+			
+			if (token == null)
+				return new Tools().getJsonWithError("no token provided");
+			
+			if (!tm.tokenInDatabase(token))
+				return new Tools().getJsonWithError("token not in database");
+			
+			String card = map.get("uuid");
+			
+			return !new UserManagement().cardBlocked(card);
+		});
+		
+		get("/card/:UUID/balance", (req, res) -> {
+			Map<String, String> map = requestToMap(req);
+			
+			TokenManager tm = new TokenManager();
+			String token = req.headers("token");
+			
+			if (token == null)
+				return new Tools().getJsonWithError("no token provided");
+			
+			if (!tm.tokenInDatabase(token))
+				return new Tools().getJsonWithError("token not in database");
+			
+			if (!tm.tokenValidated(token))
+				return new Tools().getJsonWithError("token not validated");
+			
+			String card = map.get("uuid");
+			
+			return new ActionGetBalance().getBalance(card);
+		});
+		
+		post("/card/:UUID/balance", (req, res) -> {
+			Map<String, String> map = requestToMap(req);
+			
+			TokenManager tm = new TokenManager();
+			String token = req.headers("token");
+			
+			if (token == null)
+				return new Tools().getJsonWithError("no token provided");
+			
+			if (!tm.tokenInDatabase(token))
+				return new Tools().getJsonWithError("token not in database");
+			
+			if (!tm.tokenValidated(token))
+				return new Tools().getJsonWithError("token not validated");
+			
+			String card = map.get("uuid");
+			String amount = req.headers("amount");
+			
+			return new ActionWithdrawMoney().withdrawMoney(amount, card);
+		});
+		
+		get("/card/:UUID/validate/:PIN", (req, res) -> {
+			Map<String, String> map = requestToMap(req);
+			
+			String token = req.headers("token");
+			
+			//TODO: Token check
+			
+			if (token == null)
+				return new Tools().getJsonWithError("no token provided");
+			
+			String card = map.get("uuid");
+			String pin = map.get("pin");
+			
+			UserManagement um = new UserManagement();
+			
+			int auth = new Tools().authUser(card, pin);
+			
+			if (um.cardBlocked(card))
+				return new JSONObject().put("error", "card blocked");
+			
+			JSONObject response = new JSONObject();
+			
+			if (auth != 0) {
+				
+				um.increaseTries(card);
+				
+				int tries = um.getTries(card);
+				
+				if (tries == 3) {
+					return new JSONObject().put("error", "card blocked").put("tries", 3);
+				}
+				
+				response.put("tries", tries);
+				response.put("error", new Tools().getErrorMessage(auth));
+				
+				return response;
+				
+			}
+			
+			new TokenManager().validateToken(token);
+			
+			response.put("status", true);
+			
+			return response;
+			
 		});
 	}
 
@@ -123,5 +261,6 @@ public class AppNew {
 
 	public void main(String[] args) {
 		startWebServer();
+		tm = new TokenManager();
 	}
 }

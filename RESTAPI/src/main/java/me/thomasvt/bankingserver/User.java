@@ -1,7 +1,5 @@
 package me.thomasvt.bankingserver;
 
-import java.sql.Date;
-
 public class User {
 	
 	private String firstname, lastname, zipcode, housenumber, residence, mobnumber, birthdate;

@@ -5,16 +5,35 @@ import java.util.Map;
 import org.json.JSONObject;
 
 class ActionWithdrawMoney {
-
+	
 	public JSONObject withdrawMoney(Map<String, String> parameters) {
-		JSONObject response = new JSONObject();
+		String cardid = parameters.get("user");
 		
 		if (!new Tools().isDouble(parameters.get("amount")))
 			return new JSONObject().put("error", "amount not a double");
 		
-		String cardid = parameters.get("user");
-		double balance = new UserManagement().getBalance(cardid);
 		double amountToWithdraw = Double.parseDouble(parameters.get("amount"));
+		
+		return withdrawMoney(amountToWithdraw, cardid);
+	}
+	
+	public JSONObject withdrawMoney(String amountToWithdraw, String cardid) {
+		
+		if (amountToWithdraw == null)
+			return new JSONObject().put("error", "amount not provided");
+		
+		if (!new Tools().isDouble(amountToWithdraw))
+			return new JSONObject().put("error", "amount not a double");
+		
+		double x = Double.parseDouble(amountToWithdraw);
+		
+		return withdrawMoney(x, cardid);
+	}
+
+	public JSONObject withdrawMoney(double amountToWithdraw, String cardid) {
+		JSONObject response = new JSONObject();
+		
+		double balance = new UserManagement().getBalance(cardid);
 		
 		if (balance < amountToWithdraw)
 			return new JSONObject().put("error", "not enough balance");
