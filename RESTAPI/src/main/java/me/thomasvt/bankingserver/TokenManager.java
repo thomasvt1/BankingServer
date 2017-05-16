@@ -14,7 +14,7 @@ public class TokenManager {
     	
     	App.getDatabase().createStatement(sql);
 		
-		return UUID;
+		return UUID;//
 	}
 	
 	public boolean tokenInDatabase(String token) {
