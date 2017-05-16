@@ -42,10 +42,6 @@ public class AppNew {
 	static void startWebServer() {
 		port(9010);
 
-		get("/", (req, res) -> {
-			return "Welcome to SOFA bank!";
-		});
-
 		get("/oldapi", (req, res) -> {
 			ApiHandler api = new ApiHandler();
 			return api.handle(req);
@@ -122,7 +118,7 @@ public class AppNew {
 				return new Tools().getJsonWithError("token not in database");
 			
 			String card = map.get("uuid");
-			
+			//exists: 
 			return new UserManagement().cardExists(card);
 		});
 		
@@ -186,49 +182,52 @@ public class AppNew {
 		
 		get("/card/:UUID/validate/:PIN", (req, res) -> {
 			Map<String, String> map = requestToMap(req);
-			
+
 			String token = req.headers("token");
-			
-			//TODO: Token check
-			
+
+			// TODO: Token check
+
 			if (token == null)
 				return new Tools().getJsonWithError("no token provided");
-			
+
 			String card = map.get("uuid");
 			String pin = map.get("pin");
-			
+
 			UserManagement um = new UserManagement();
-			
+
 			int auth = new Tools().authUser(card, pin);
-			
+
 			if (um.cardBlocked(card))
 				return new JSONObject().put("error", "card blocked");
-			
+
 			JSONObject response = new JSONObject();
-			
+
 			if (auth != 0) {
-				
+
 				um.increaseTries(card);
-				
+
 				int tries = um.getTries(card);
-				
+
 				if (tries == 3) {
 					return new JSONObject().put("error", "card blocked").put("tries", 3);
 				}
-				
+
 				response.put("tries", tries);
 				response.put("error", new Tools().getErrorMessage(auth));
-				
+
 				return response;
-				
+
 			}
-			
+
 			new TokenManager().validateToken(token);
-			
+
 			response.put("status", true);
-			
+
 			return response;
-			
+		});
+		
+		get("*", (req, res) -> {
+			return "Welcome to SOFA bank!";
 		});
 	}
 
