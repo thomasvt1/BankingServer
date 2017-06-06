@@ -115,7 +115,7 @@ public class Tools {
 		
 		String suffix = "" + date.getMinute() + (date.getYear() * date.getDayOfMonth()) + (date.getMinute() * date.getMinute()) + date.getDayOfYear() + (date.getDayOfYear() * date.getDayOfMonth());
 		
-		return StringUtils.substring(prefix + suffix, 0, 16);
+		return StringUtils.substring(prefix + suffix, 0, 10); //TODO: 16 long
 	}
 	
 	public String getJsonWithError(String error) {

@@ -46,5 +46,17 @@ public class TokenManager {
 		App.getDatabase().createStatement(sql);
 		
 	}
+	
+	public boolean authToken(String id, String secret) {
+		String sql = "SELECT `secret` FROM `banks` WHERE `id` LIKE '"+id+"'";
+        String s = App.getDatabase().selectStatement(sql);
+        
+        if (s == null)
+        	return false;
+        
+        if (secret.matches(s))
+        	return true;
+        return false;
+	}
 
 }

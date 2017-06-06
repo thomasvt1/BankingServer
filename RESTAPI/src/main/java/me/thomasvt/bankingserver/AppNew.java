@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import spark.Request;
@@ -80,9 +81,36 @@ public class AppNew {
 		 */
 		
 		get("/token", (req, res) -> {
-			//TODO: Auth
+			String clientid = req.headers("clientid");
+			String clientsecret = req.headers("clientsecret");
 			
-			return tm.getNewToken();
+			if (clientid == null || clientsecret == null)
+				return new Tools().getJsonWithError("clientid or secret not provided");
+			
+			if (!tm.authToken(clientid, clientsecret))
+				return new Tools().getJsonWithError("clientid or secret not correct");
+			
+			String token = tm.getNewToken();
+			
+			JSONObject json = new JSONObject();
+			
+			JSONObject x = new JSONObject();
+			
+			
+			
+			x.put("id", token);
+			x.put("expires", 300);
+			
+			json.put("token", x);
+			
+			String xy = json.toString();
+			System.out.println(xy);
+			
+			JSONObject y = new JSONObject(xy);
+			
+			System.out.println(y.getJSONObject("token").get("id"));
+			
+			return json;
 		});
 		
 		get("/token/validated", (req, res) -> {

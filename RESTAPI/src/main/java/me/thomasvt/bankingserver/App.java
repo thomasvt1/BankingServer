@@ -1,6 +1,7 @@
 package me.thomasvt.bankingserver;
 
 import java.sql.SQLException;
+import java.util.Timer;
 
 public class App {
 	
@@ -18,6 +19,9 @@ public class App {
 		new AppNew().main(args);
 		
 		new Commands().keepServiceOn();
+		
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(new TokenTimer(), 1000, 3000);
 	}
 
 	protected static Database getDatabase() {
