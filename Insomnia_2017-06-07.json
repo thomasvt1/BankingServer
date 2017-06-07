@@ -1,0 +1,206 @@
+{
+	"_type": "export",
+	"__export_format": 3,
+	"__export_date": "2017-06-07T18:43:40.061Z",
+	"__export_source": "insomnia.desktop.app:v5.2.0",
+	"resources": [
+		{
+			"_id": "wrk_4dbb132aa3bd48e0ae5985feda39bfbc",
+			"parentId": null,
+			"modified": 1496855158588,
+			"created": 1496855158588,
+			"name": "Insomnia",
+			"description": "",
+			"certificates": [],
+			"_type": "workspace"
+		},
+		{
+			"_id": "env_6cad1efc6641473080893e2c527893cd",
+			"parentId": "wrk_4dbb132aa3bd48e0ae5985feda39bfbc",
+			"modified": 1496855217493,
+			"created": 1496855217493,
+			"name": "Base Environment",
+			"data": {},
+			"_type": "environment"
+		},
+		{
+			"_id": "jar_a2e4430437bd42ea8b8dba6618e13032",
+			"parentId": "wrk_4dbb132aa3bd48e0ae5985feda39bfbc",
+			"modified": 1496855328552,
+			"created": 1496855328552,
+			"name": "Default Jar",
+			"cookies": [],
+			"_type": "cookie_jar"
+		},
+		{
+			"_id": "req_60f2aef7f2aa441e93e0d58a6c976e56",
+			"parentId": "wrk_4dbb132aa3bd48e0ae5985feda39bfbc",
+			"modified": 1496859909502,
+			"created": 1496855217380,
+			"url": "https://api.bank.thomasvt.xyz/token",
+			"name": "Get Token",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Client-Id",
+					"value": "aae45b32-4a99-11e7-9f16-de2b444c2004",
+					"id": "pair_68fdb1e3439d4f279943a02ff1c05999"
+				},
+				{
+					"name": "Client-Secret",
+					"value": "72fb3847-f197-4f6e-a471-78b2fc5b7e1a",
+					"id": "pair_7bccc2614dda4faca7776462746678cd"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1496855217380,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_ac4732a625f74475aa3686debf90b4f6",
+			"parentId": "wrk_4dbb132aa3bd48e0ae5985feda39bfbc",
+			"modified": 1496856170216,
+			"created": 1496855926744,
+			"url": "https://api.bank.thomasvt.xyz/card/17393F25/enabled",
+			"name": "Get Card Enabled",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Token",
+					"value": "5147c744-67bd-4d56-802b-370ad09fccb9",
+					"id": "pair_9cdb9e26674246b5982f25389db41772"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1496855926744,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_dfb39facf55d4dcea0e0bc16923f9f2d",
+			"parentId": "wrk_4dbb132aa3bd48e0ae5985feda39bfbc",
+			"modified": 1496857759728,
+			"created": 1496856129784,
+			"url": "https://api.bank.thomasvt.xyz/card/17393F25/balance",
+			"name": "Get Balance",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Token",
+					"value": "337d1f61-caa2-45d0-8fa2-89112eaeba56",
+					"id": "pair_976dd57d48934c05a4ca5ac0cefaa297"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1496856129784,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_d1b54d1c0a5644819c1a7d0d21fe6bab",
+			"parentId": "wrk_4dbb132aa3bd48e0ae5985feda39bfbc",
+			"modified": 1496859993546,
+			"created": 1496856194228,
+			"url": "https://api.bank.thomasvt.xyz/card/17393F25/validate",
+			"name": "Get Validate Token",
+			"description": "",
+			"method": "GET",
+			"body": {
+				"mimeType": "",
+				"text": ""
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Token",
+					"value": "9efb5683-00ca-44d5-b4b1-6b8286776cbe",
+					"id": "pair_e1ac028577f8441faf77b77f90b86ee3"
+				},
+				{
+					"name": "Pin",
+					"value": "1111",
+					"id": "pair_c16097f5823845fd86737ab246932718"
+				}
+			],
+			"authentication": {
+				"type": "bearer"
+			},
+			"metaSortKey": -1496856194228,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_70d1910f9138455d9c74ccf4e5da92cc",
+			"parentId": "wrk_4dbb132aa3bd48e0ae5985feda39bfbc",
+			"modified": 1496857837665,
+			"created": 1496857824519,
+			"url": "https://api.bank.thomasvt.xyz/card/17393F25/exists",
+			"name": "Get Exists",
+			"description": "",
+			"method": "GET",
+			"body": {},
+			"parameters": [],
+			"headers": [],
+			"authentication": {},
+			"metaSortKey": -1496857824519,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_1e3c01f86e4c485584478406aa39e464",
+			"parentId": "wrk_4dbb132aa3bd48e0ae5985feda39bfbc",
+			"modified": 1496858959383,
+			"created": 1496858220360,
+			"url": "https://api.bank.thomasvt.xyz/card/17393F25/balance",
+			"name": "Post Balance",
+			"description": "",
+			"method": "POST",
+			"body": {},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Token",
+					"value": "78fc840d-d0db-49fd-be0d-3130d51cca7d",
+					"id": "pair_c7967a9ee576452689a6ec812aff4ed4"
+				},
+				{
+					"name": "Amount",
+					"value": "-100",
+					"id": "pair_0c31ceba665448e59cab432816b417a8"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1496858220360,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		}
+	]
+}
