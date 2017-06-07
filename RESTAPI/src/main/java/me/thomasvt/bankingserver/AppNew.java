@@ -199,6 +199,18 @@ public class AppNew {
 			String card = map.get("uuid");
 			String amount = req.headers("amount");
 			
+			int amnt = 0;
+			
+			try {
+				amnt = Integer.parseInt(amount);
+				
+				if (amnt > 0)
+					return new Tools().getJsonWithError(99, "You are not authorized to add money to the acccount");
+				amnt = amnt * -1;
+			} catch (Exception e) {
+				return new Tools().getJsonWithError(99, "Amount specified not int");
+			}
+			
 			return new ActionWithdrawMoney().withdrawMoney(amount, card);
 		});
 		

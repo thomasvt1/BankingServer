@@ -12,7 +12,7 @@ class ActionWithdrawMoney {
 		if (!new Tools().isDouble(parameters.get("amount")))
 			return new JSONObject().put("error", "amount not a double");
 		
-		double amountToWithdraw = Double.parseDouble(parameters.get("amount"));
+		int amountToWithdraw = Integer.parseInt(parameters.get("amount"));
 		
 		return withdrawMoney(amountToWithdraw, cardid);
 	}
@@ -25,12 +25,12 @@ class ActionWithdrawMoney {
 		if (!new Tools().isDouble(amountToWithdraw))
 			return new JSONObject().put("error", "amount not a double");
 		
-		double x = Double.parseDouble(amountToWithdraw);
+		int x = Integer.parseInt(amountToWithdraw);
 		
 		return withdrawMoney(x, cardid);
 	}
 
-	public JSONObject withdrawMoney(double amountToWithdraw, String cardid) {
+	public JSONObject withdrawMoney(int amountToWithdraw, String cardid) {
 		JSONObject response = new JSONObject();
 		
 		double balance = new UserManagement().getBalance(cardid);
