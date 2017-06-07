@@ -55,26 +55,27 @@ public class Tools {
 	/*
 	 * Returns 'OK' when user is authenticated. Else will return (Json) string why not.
 	 */
-	String authUserOrReturnError(Map<String, String> parameters) {
+	/*
+	JSONObject authUserOrReturnError(Map<String, String> parameters) {
 		if (parameters.get("user") == null)
-			return getJsonWithError("no user provided");
+			return getJsonWithError(7, "no user provided");
 		if (parameters.get("pin") == null)
-			return getJsonWithError("no pin provided");
+			return getJsonWithError(7, "no pin provided");
 		
 		String cardid = parameters.get("user");
 		String pin = parameters.get("pin");
 		
 		if (!new UserManagement().cardExists(cardid))
-			return new Tools().getJsonWithError("no user");
+			return new Tools().getJsonWithError(10, "no user");
 
 		boolean auth = pinCorrect(cardid, pin);
 
 		if (auth)
-			return "OK";
+			return null;
 		else
-			return new Tools().getJsonWithError("pin incorrect");
+			return new Tools().getJsonWithError(99, "pin incorrect");
 	}
-
+*/
 	public String getSaltedPin(User user, String carduuid, String pin) {
 		int i = Integer.parseInt(pin);
 		int x = user.getLastname().length();
@@ -115,13 +116,23 @@ public class Tools {
 		
 		String suffix = "" + date.getMinute() + (date.getYear() * date.getDayOfMonth()) + (date.getMinute() * date.getMinute()) + date.getDayOfYear() + (date.getDayOfYear() * date.getDayOfMonth());
 		
-		return StringUtils.substring(prefix + suffix, 0, 10); //TODO: 16 long
+		return StringUtils.substring(prefix + suffix, 0, 16); //TODO: 16 long
 	}
 	
-	public String getJsonWithError(String error) {
-		Map<String, String> response = new HashMap<String, String>();
-		response.put("error", error);
-		return new JSONObject(response).toString();
+	public JSONObject getJsonWithError(int i, String error) {
+		//Map<String, String> response = new HashMap<String, String>();
+		
+		JSONObject json = new JSONObject();
+		
+		JSONObject x = new JSONObject();
+		
+		x.put("id", i);
+		x.put("message", error);
+		
+		json.put("error", x);
+		
+		
+		return json;
 	}
 	
 	public Map<String, String> queryToMap(String query){

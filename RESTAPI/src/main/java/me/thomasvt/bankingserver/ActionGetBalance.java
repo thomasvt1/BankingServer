@@ -25,9 +25,11 @@ class ActionGetBalance {
 	JSONObject getBalance(String cardid) {
 		JSONObject response = new JSONObject();
 		
-		int balance = (int) (new UserManagement().getBalance(cardid) * 100);
-		
-		response.put("balance", balance+"");
+		response.put("balance", getIntBalance(cardid)+"");
 		return response;
+	}
+	
+	int getIntBalance(String cardid) {
+		return (int) (new UserManagement().getBalance(cardid) * 100);
 	}
 }

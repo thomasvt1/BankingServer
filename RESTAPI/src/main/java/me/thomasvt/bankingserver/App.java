@@ -18,10 +18,10 @@ public class App {
 		
 		new AppNew().main(args);
 		
-		new Commands().keepServiceOn();
-		
 		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(new TokenTimer(), 1000, 3000);
+		timer.schedule(new TokenTimer(), 1000, 60000);
+		
+		new Commands().keepServiceOn();
 	}
 
 	protected static Database getDatabase() {
