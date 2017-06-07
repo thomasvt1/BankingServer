@@ -187,7 +187,7 @@ public class AppNew {
 		get("/card/:UUID/validate", (req, res) -> {
 			Map<String, String> map = requestToMap(req);
 
-			String token = req.headers("token");
+			String token = req.headers("Token");
 			String pin = req.headers("Pin");
 
 			JSONObject auth = authToken(token, true, false);
