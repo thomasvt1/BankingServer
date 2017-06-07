@@ -48,38 +48,6 @@ public class AppNew {
 		});
 
 		/*
-		get("/balance/:user/:pin", (req, res) -> {
-			Map<String, String> map = requestToMap(req);
-
-			JSONObject error = authCorrect(map);
-			if (error != null)
-				return error;
-
-			return new ActionGetBalance().getBalance(map);
-		});
-
-		get("/withdraw/:user/:pin/:amount", (req, res) -> {
-			Map<String, String> map = requestToMap(req);
-
-			JSONObject error = authCorrect(map);
-			if (error != null)
-				return error;
-
-			return new ActionWithdrawMoney().withdrawMoney(map);
-		});
-
-		get("/cardcheck/:user", (req, res) -> {
-			Map<String, String> map = requestToMap(req);
-
-			JSONObject error = authCorrect(map);
-			if (error != null)
-				return error;
-
-			return new ActionWithdrawMoney().withdrawMoney(map);
-		});
-		 */
-		
-		/*
 		 * Returns a token when requested
 		 */
 		get("/token", (req, res) -> {
