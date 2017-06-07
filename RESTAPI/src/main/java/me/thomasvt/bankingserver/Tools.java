@@ -120,8 +120,6 @@ public class Tools {
 	}
 	
 	public JSONObject getJsonWithError(int i, String error) {
-		//Map<String, String> response = new HashMap<String, String>();
-		
 		JSONObject json = new JSONObject();
 		
 		JSONObject x = new JSONObject();

@@ -166,7 +166,7 @@ public class AppNew {
 		get("/card/:UUID/balance", (req, res) -> {
 			Map<String, String> map = requestToMap(req);
 			
-			String token = req.headers("token");
+			String token = req.headers("Token");
 			
 			JSONObject auth = authToken(token, true, true);
 			
@@ -189,7 +189,7 @@ public class AppNew {
 		post("/card/:UUID/balance", (req, res) -> {
 			Map<String, String> map = requestToMap(req);
 			
-			String token = req.headers("token");
+			String token = req.headers("Token");
 			
 			JSONObject auth = authToken(token, true, true);
 			
@@ -197,12 +197,14 @@ public class AppNew {
 				return auth;
 			
 			String card = map.get("uuid");
-			String amount = req.headers("amount");
+			String amount = req.headers("Amount");
 			
-			int amnt = 0;
+			double amnt = 0;
 			
 			try {
-				amnt = Integer.parseInt(amount);
+				int x = Integer.parseInt(amount);
+				
+				amnt = x / 100.0;
 				
 				if (amnt > 0)
 					return new Tools().getJsonWithError(99, "You are not authorized to add money to the acccount");
@@ -211,7 +213,7 @@ public class AppNew {
 				return new Tools().getJsonWithError(99, "Amount specified not int");
 			}
 			
-			return new ActionWithdrawMoney().withdrawMoney(amount, card);
+			return new ActionWithdrawMoney().withdrawMoney(amnt, card);
 		});
 		
 		get("/card/:UUID/validate", (req, res) -> {
@@ -237,8 +239,6 @@ public class AppNew {
 			if (um.cardBlocked(card))
 				return new Tools().getJsonWithError(99, "card blocked");
 
-			JSONObject response = new JSONObject();
-
 			if (authtry != 0) {
 
 				um.increaseTries(card);
@@ -246,7 +246,11 @@ public class AppNew {
 				int tries = um.getTries(card);
 
 				if (tries == 3) {
-					return new JSONObject().put("error", "card blocked").put("tries", 3);
+					JSONObject json = new Tools().getJsonWithError(99, "card blocked");
+
+					json.getJSONObject("error").put("tries", 3);
+					
+					return json;
 				}
 				
 				JSONObject json = new JSONObject();
