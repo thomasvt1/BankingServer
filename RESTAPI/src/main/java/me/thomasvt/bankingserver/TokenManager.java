@@ -4,13 +4,14 @@ import java.util.UUID;
 
 public class TokenManager {
 
-	public String getNewToken() {
+	public String getNewToken(String ip) {
 		UUID randomUUID = UUID.randomUUID();
 		String UUID = randomUUID.toString();
 
-		String sql = "INSERT INTO `token` (`accountid`, `token`, `authed`, `time`) VALUES (NULL, 'UUID', '0', CURRENT_TIMESTAMP);";
+		String sql = "INSERT INTO `token` (`accountid`, `token`, `authed`, `time`, `ip`) VALUES (NULL, '{UUID}', '0', CURRENT_TIMESTAMP, '{IP}');";
 
-		sql = sql.replace("UUID", UUID);
+		sql = sql.replace("{UUID}", UUID);
+		sql = sql.replace("{IP}", ip);
 
 		App.getDatabase().createStatement(sql);
 
@@ -18,10 +19,17 @@ public class TokenManager {
 	}
 
 	public boolean tokenInDatabase(String token) {
-		String sql = "SELECT token FROM `token` WHERE `token` LIKE '" + token + "'";
+		String sql = "SELECT `token` FROM `token` WHERE `token` LIKE '" + token + "'";
 		String s = App.getDatabase().selectStatement(sql);
 
 		return s != null;
+	}
+	
+	public String getIp(String token) {
+		String sql = "SELECT `ip` FROM `token` WHERE `token` LIKE '" + token + "'";
+		String s = App.getDatabase().selectStatement(sql);
+
+		return s;
 	}
 
 	public boolean tokenValidated(String token) {

@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.json.JSONObject;
 
 import spark.Request;
@@ -60,7 +61,7 @@ public class AppNew {
 			if (!tm.authToken(clientid, clientsecret))
 				return new Tools().getJsonWithError(1, "clientid or secret not correct");
 
-			String token = tm.getNewToken();
+			String token = tm.getNewToken(getIp(req));
 
 			JSONObject json = new JSONObject();
 			JSONObject x = new JSONObject();
@@ -104,7 +105,7 @@ public class AppNew {
 
 			String token = req.headers("Token");
 
-			JSONObject auth = authToken(token, true, false);
+			JSONObject auth = authToken(token, getIp(req), false);
 
 			if (auth != null)
 				return auth;
@@ -133,7 +134,7 @@ public class AppNew {
 
 			String token = req.headers("Token");
 
-			JSONObject auth = authToken(token, true, true);
+			JSONObject auth = authToken(token, getIp(req), true);
 
 			if (auth != null)
 				return auth;
@@ -156,7 +157,7 @@ public class AppNew {
 
 			String token = req.headers("Token");
 
-			JSONObject auth = authToken(token, true, true);
+			JSONObject auth = authToken(token, getIp(req), true);
 
 			if (auth != null)
 				return auth;
@@ -187,12 +188,12 @@ public class AppNew {
 			String token = req.headers("Token");
 			String pin = req.headers("Pin");
 
-			JSONObject auth = authToken(token, true, false);
+			JSONObject auth = authToken(token, getIp(req), false);
 
 			if (auth != null)
 				return auth;
-
-			if (authToken(token, false, true) == null)
+			
+			if (tm.tokenValidated(token))
 				return new Tools().getJsonWithError(99, "token already verified!");
 
 			String card = map.get("uuid");
@@ -276,13 +277,36 @@ public class AppNew {
 		}
 		return null;
 	}
+	
+	/*
+	 * Returns the IP of the connection. Even when behind (Apache)
+	 * reverse-proxy.
+	 */
+	private static String getIp(Request req) {
+		if (SystemUtils.IS_OS_LINUX)
+			return req.headers("X-forwarded-for");
+		else
+			return req.ip();
+	}
 
-	private static JSONObject authToken(String token, boolean database, boolean validated) {
+	/*
+	 * Returns a JSONObject with an error or will return null
+	 * (token, ip, should check if token is validated)
+	 */
+	private static JSONObject authToken(String token, String ip, boolean validated) {
+		
+		System.out.println("Source: " + ip);
+		System.out.println("Database: " + tm.getIp(token));
+		
 		if (token == null)
 			return new Tools().getJsonWithError(8, "no token provided");
-
-		else if (!tm.tokenInDatabase(token) && database)
+		
+		else if (!tm.tokenInDatabase(token))
 			return new Tools().getJsonWithError(8, "token not in database");
+		
+		else if (ip != null)
+			if (!ip.matches(tm.getIp(token)))
+				return new Tools().getJsonWithError(8, "token validated on different ip"); 
 
 		else if (!tm.tokenValidated(token) && validated)
 			return new Tools().getJsonWithError(8, "token not validated");
