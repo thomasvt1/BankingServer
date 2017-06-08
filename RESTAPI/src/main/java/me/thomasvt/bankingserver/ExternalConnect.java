@@ -21,21 +21,32 @@ public class ExternalConnect {
 		ExternalConnect http = new ExternalConnect();
 		
 		BankObject SOFA = new Bank().SOFA;
+		String card = "17393F25";
 		
 		// TESTING 1 - REQUEST TOKEN
 
-		System.out.println("Testing 1 - Send request token");
+		System.out.println("Testing 1 - Send Http GET - request token");
 		
-		System.out.println(http.getToken(SOFA));
+		String token = http.getToken(SOFA);
+		
+		System.out.println(token);
+		
+		// TESTING 2 - VALIDATE TOKEN
+
+		System.out.println("\nTesting 2 - Send Http GET - validate token");
+				
+		boolean validated = http.validateToken(SOFA, token, "1111", card);
+		
+		System.out.println(validated);
 		
 		//TESTING 3 - WITHDRAW MONEY
 		
-		Map<String, String> post = new HashMap<String, String>();
-		post.put("Token", "c5197594-6e1f-4ccc-9c7b-de6bb4f507f1");
-		post.put("Amount", "-100");
+		System.out.println("\nTesting 3 - Send Http POST - withdraw");
+		
+		boolean withdrawn = http.withdrawMoney(SOFA, card, token, "-100");
+		
+		System.out.println(withdrawn);
 
-		System.out.println("Testing 2 - Send Http POST request");
-		//http.sendPost(post);
 	}
 	
 	String getToken(BankObject bank) {
@@ -52,7 +63,7 @@ public class ExternalConnect {
 				return null;
 			
 			else
-			return json.getJSONObject("token").getString("id");
+				return json.getJSONObject("token").getString("id");
 					
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -60,13 +71,45 @@ public class ExternalConnect {
 		return null;
 	}
 	
-	boolean withdrawMoney(BankObject bank, String token, String amount) {
+	boolean validateToken(BankObject bank,String token, String pin, String card) {
+		Map<String, String> get = new HashMap<String, String>();
+		get.put("Token", token);
+		get.put("Pin", pin);
+		
+		try {
+			String suffix = "/card/{CARD}/validate";
+			suffix = suffix.replace("{CARD}", card);
+			
+			String s = sendGet(bank, suffix, get);
+			
+			JSONObject json = new JSONObject(s);
+			
+			if (json.has("error"))
+				return false;
+			
+			if (!json.has("card"))
+				return false;
+			
+			else
+				return json.getJSONObject("card").getBoolean("validate");
+					
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	boolean withdrawMoney(BankObject bank, String card, String token, String amount) {
 		Map<String, String> get = new HashMap<String, String>();
 		get.put("Token", token);
 		get.put("Amount", amount);
 		
 		try {
-			String s = sendGet(bank, "/token", get);
+			String suffix = "/card/{CARD}/balance";
+			suffix = suffix.replace("{CARD}", card);
+			
+			String s = sendPost(bank, suffix, get);
+			
 			
 			JSONObject json = new JSONObject(s);
 			
@@ -85,7 +128,6 @@ public class ExternalConnect {
 	private String sendGet(BankObject bank, String suffix, Map<String, String> map) throws Exception {
 
 		String url = bank.getUrl() + suffix;
-		//String url = "https://api.bank.thomasvt.xyz/token";
 
 		HttpClient client = HttpClientBuilder.create().build();
 		HttpGet request = new HttpGet(url);
@@ -117,7 +159,6 @@ public class ExternalConnect {
 	private String sendPost(BankObject bank, String suffix, Map<String, String> map) throws Exception {
 
 		String url = bank.getUrl() + suffix;
-		//String url = "https://api.bank.thomasvt.xyz/card/17393F25/balance";
 
 		HttpClient client = HttpClientBuilder.create().build();
 		HttpPost post = new HttpPost(url);
