@@ -1,6 +1,7 @@
 package me.thomasvt.bankingserver;
 
 import java.sql.SQLException;
+import java.util.Timer;
 
 public class App {
 	
@@ -16,6 +17,9 @@ public class App {
 		db.printStatusOfConnection();
 		
 		new AppNew().main(args);
+		
+		Timer timer = new Timer();
+		timer.schedule(new TokenTimer(), 1000, 60000);
 		
 		new Commands().keepServiceOn();
 	}
