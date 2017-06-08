@@ -12,7 +12,15 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
 
+import me.thomasvt.bankingserver.Bank.BankObject;
+
 public class ExternalConnect {
+	
+	ExternalConnect http;
+	
+	public ExternalConnect() {
+		http = new ExternalConnect();
+	}
 
 	public static void main(String[] args) throws Exception {
 
@@ -33,11 +41,25 @@ public class ExternalConnect {
 		http.sendPost(post);
 
 	}
+	
+	String getToken(BankObject bank) {
+		Map<String, String> get = new HashMap<String, String>();
+		get.put(bank.getId());
+		get.put("Client-Secret", "72fb3847-f197-4f6e-a471-78b2fc5b7e1a");
+		
+		try {
+			http.sendGet(bank, get);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 	// HTTP GET request
-	private void sendGet(Map<String, String> map) throws Exception {
+	private void sendGet(BankObject bank, Map<String, String> map) throws Exception {
 
-		String url = "https://api.bank.thomasvt.xyz/token";
+		String url = bank.getUrl();
+		//String url = "https://api.bank.thomasvt.xyz/token";
 
 		HttpClient client = HttpClientBuilder.create().build();
 		HttpGet request = new HttpGet(url);
