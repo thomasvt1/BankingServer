@@ -16,49 +16,75 @@ import me.thomasvt.bankingserver.Bank.BankObject;
 
 public class ExternalConnect {
 	
-	ExternalConnect http;
-	
-	public ExternalConnect() {
-		http = new ExternalConnect();
-	}
-
 	public static void main(String[] args) throws Exception {
 
 		ExternalConnect http = new ExternalConnect();
 		
-		Map<String, String> get = new HashMap<String, String>();
-		get.put("Client-Id", "aae45b32-4a99-11e7-9f16-de2b444c2004");
-		get.put("Client-Secret", "72fb3847-f197-4f6e-a471-78b2fc5b7e1a");
+		BankObject SOFA = new Bank().SOFA;
+		
+		// TESTING 1 - REQUEST TOKEN
 
-		System.out.println("Testing 1 - Send Http GET request");
-		http.sendGet(get);
+		System.out.println("Testing 1 - Send request token");
+		
+		System.out.println(http.getToken(SOFA));
+		
+		//TESTING 3 - WITHDRAW MONEY
 		
 		Map<String, String> post = new HashMap<String, String>();
 		post.put("Token", "c5197594-6e1f-4ccc-9c7b-de6bb4f507f1");
 		post.put("Amount", "-100");
 
-		System.out.println("\nTesting 2 - Send Http POST request");
-		http.sendPost(post);
-
+		System.out.println("Testing 2 - Send Http POST request");
+		//http.sendPost(post);
 	}
 	
 	String getToken(BankObject bank) {
 		Map<String, String> get = new HashMap<String, String>();
-		get.put(bank.getId());
-		get.put("Client-Secret", "72fb3847-f197-4f6e-a471-78b2fc5b7e1a");
+		get.put("Client-Id", bank.getId());
+		get.put("Client-Secret", bank.getSecret());
 		
 		try {
-			http.sendGet(bank, get);
+			String s = sendGet(bank, "/token", get);
+			
+			JSONObject json = new JSONObject(s);
+			
+			if (json.has("error"))
+				return null;
+			
+			else
+			return json.getJSONObject("token").getString("id");
+					
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
+	
+	boolean withdrawMoney(BankObject bank, String token, String amount) {
+		Map<String, String> get = new HashMap<String, String>();
+		get.put("Token", token);
+		get.put("Amount", amount);
+		
+		try {
+			String s = sendGet(bank, "/token", get);
+			
+			JSONObject json = new JSONObject(s);
+			
+			if (json.has("error"))
+				return false;
+			
+			else if (json.has("card"))
+				return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 	// HTTP GET request
-	private void sendGet(BankObject bank, Map<String, String> map) throws Exception {
+	private String sendGet(BankObject bank, String suffix, Map<String, String> map) throws Exception {
 
-		String url = bank.getUrl();
+		String url = bank.getUrl() + suffix;
 		//String url = "https://api.bank.thomasvt.xyz/token";
 
 		HttpClient client = HttpClientBuilder.create().build();
@@ -71,8 +97,6 @@ public class ExternalConnect {
 		HttpResponse response = client.execute(request);
 
 		System.out.println("\nSending 'GET' request to URL : " + url);
-		System.out.println("Response Code : " +
-                       response.getStatusLine().getStatusCode());
 
 		BufferedReader rd = new BufferedReader(
                        new InputStreamReader(response.getEntity().getContent()));
@@ -85,18 +109,15 @@ public class ExternalConnect {
 
 		System.out.println(result.toString());
 		
-		JSONObject x = new JSONObject(result.toString());
-		
-		String y = x.getJSONObject("token").getString("id");
-		
-		System.out.println(y);
+		return result.toString();
 
 	}
 
 	// HTTP POST request
-	private void sendPost(Map<String, String> map) throws Exception {
+	private String sendPost(BankObject bank, String suffix, Map<String, String> map) throws Exception {
 
-		String url = "https://api.bank.thomasvt.xyz/card/17393F25/balance";
+		String url = bank.getUrl() + suffix;
+		//String url = "https://api.bank.thomasvt.xyz/card/17393F25/balance";
 
 		HttpClient client = HttpClientBuilder.create().build();
 		HttpPost post = new HttpPost(url);
@@ -108,8 +129,6 @@ public class ExternalConnect {
 
 		HttpResponse response = client.execute(post);
 		System.out.println("\nSending 'POST' request to URL : " + url);
-		System.out.println("Response Code : " +
-                                    response.getStatusLine().getStatusCode());
 
 		BufferedReader rd = new BufferedReader(
                         new InputStreamReader(response.getEntity().getContent()));
@@ -121,5 +140,6 @@ public class ExternalConnect {
 		}
 
 		System.out.println(result.toString());
+		return result.toString();
 	}
 }
