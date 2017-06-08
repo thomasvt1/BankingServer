@@ -168,8 +168,6 @@ public class Tools {
 			String givenKey = postedKey;
 			String genKey = enc.encrypt(keyToCheck);
 			
-			System.out.println(getTimeHash());
-			
 			System.out.println("Current key: " + genKey);
 			if (genKey.contains(givenKey) && givenKey.length() < genKey.length())
 				return true;

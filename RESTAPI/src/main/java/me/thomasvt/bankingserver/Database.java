@@ -2,9 +2,6 @@ package me.thomasvt.bankingserver;
 
 import java.sql.*;
 
-import com.mysql.jdbc.CommunicationsException;
-
-
 public class Database {
 	
 	private final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
@@ -62,10 +59,9 @@ public class Database {
 		if (!shouldRunDummy())
 			return;
 		try {
-			stmt = getConn().createStatement();
-			stmt.executeUpdate("SELECT 'pinHash' FROM xxx WHERE 'user' = 22");
-		} catch (CommunicationsException e) {}
-		catch (SQLException e) {}
+			Console.writeLine("Dummy SQL is running!");
+			selectStatement("SELECT `userid` FROM `log` WHERE `logid` = 1");
+		} catch (Exception e) {}
 	}
 
 	private long lastRunTime = 60000; //1 minute
