@@ -9,28 +9,28 @@ import org.apache.commons.lang3.SystemUtils;
 import org.json.JSONObject;
 
 public class ApiHandler {
-	
+
 	public JSONObject handle(Request req) throws IOException {
 		System.out.println("Connection from: " + getIp(req));
 		System.out.println(req.queryString());
-		
+
 		String query = req.queryString();
-		
+
 		if (checkParameters(query))
 			return new JSONObject().put("error", "NO PARAMETERS");
-			
+
 		if (!keyCorrect(query))
 			return new JSONObject().put("error", "BAD KEY");
-		
+
 		if (actionProvided(query))
 			return new ActionParser().actionParser(query);
-		
+
 		return new JSONObject().put("error", "We Don't Know What Happened Bank");
 	}
-	
 
 	/*
-	 * Returns the IP of the connection. Even when behind (Apache) reverse-proxy.
+	 * Returns the IP of the connection. Even when behind (Apache)
+	 * reverse-proxy.
 	 */
 	private String getIp(Request req) {
 		if (SystemUtils.IS_OS_LINUX)
@@ -38,7 +38,7 @@ public class ApiHandler {
 		else
 			return req.ip();
 	}
-	
+
 	/*
 	 * Checks if HttpExchange contains the parameter 'action'
 	 */
@@ -48,14 +48,14 @@ public class ApiHandler {
 
 		return parameters.get("action") != null;
 	}
-	
+
 	/*
 	 * Checks if parameters were given.
 	 */
 	private boolean checkParameters(String query) {
 		return query == null;
 	}
-	
+
 	/*
 	 * Checks if the key (time based) matches to ensure safe communication.
 	 */
@@ -65,8 +65,8 @@ public class ApiHandler {
 
 		if (parameters.get("key") == null)
 			return false;
-		
-		//TODO: Disable debug
+
+		// TODO: Disable debug
 		if (parameters.get("key").matches("debug"))
 			return true;
 

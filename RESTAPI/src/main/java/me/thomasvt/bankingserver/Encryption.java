@@ -7,11 +7,11 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Base64;
 
 public class Encryption {
-	
+
 	public Encryption(String keyString) {
 		this.keyString = keyString;
 	}
-	
+
 	private static final String ALGO = "AES";
 	private String keyString = null;
 
