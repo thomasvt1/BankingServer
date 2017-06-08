@@ -71,16 +71,6 @@ public class AppNew {
 
 			json.put("token", x);
 
-			/*
-			 * 
-			 * String xy = json.toString(); System.out.println(xy);
-			 * 
-			 * JSONObject y = new JSONObject(xy);
-			 * 
-			 * System.out.println(y.getJSONObject("token").get("id"));
-			 * 
-			 */
-
 			return json;
 		});
 
@@ -294,9 +284,6 @@ public class AppNew {
 	 * (token, ip, should check if token is validated)
 	 */
 	private static JSONObject authToken(String token, String ip, boolean validated) {
-		
-		System.out.println("Source: " + ip);
-		System.out.println("Database: " + tm.getIp(token));
 		
 		if (token == null)
 			return new Tools().getJsonWithError(8, "no token provided");
