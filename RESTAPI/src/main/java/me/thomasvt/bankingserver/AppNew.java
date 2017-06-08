@@ -53,7 +53,6 @@ public class AppNew {
 		get("/token", (req, res) -> {
 			String clientid = req.headers("Client-Id");
 			String clientsecret = req.headers("Client-Secret");
-			System.out.println("token request");
 
 			if (clientid == null || clientsecret == null)
 				return new Tools().getJsonWithError(1, "clientid or secret not provided");

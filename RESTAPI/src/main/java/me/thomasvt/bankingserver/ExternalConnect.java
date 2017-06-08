@@ -39,10 +39,18 @@ public class ExternalConnect {
 		boolean validated = http.validateToken(SOFA, token, pin, card);
 
 		System.out.println(validated);
+		
+		// TESTING 3 - VALIDATE TOKEN
 
-		// TESTING 3 - WITHDRAW MONEY
+		System.out.println("\nTesting 3 - Send Http GET - get balance");
 
-		System.out.println("\nTesting 3 - Send Http POST - withdraw");
+		int balance = http.getBalance(SOFA, token, card);
+
+		System.out.println(balance);
+
+		// TESTING 4 - WITHDRAW MONEY
+
+		System.out.println("\nTesting 4 - Send Http POST - withdraw");
 
 		boolean withdrawn = http.withdrawMoney(SOFA, card, token, "-100");
 
@@ -70,6 +78,33 @@ public class ExternalConnect {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	int getBalance(BankObject bank, String token, String card) {
+		Map<String, String> get = new HashMap<String, String>();
+		get.put("Token", token);
+
+		try {
+			String suffix = "/card/{CARD}/balance";
+			suffix = suffix.replace("{CARD}", card);
+
+			String s = sendGet(bank, suffix, get);
+
+			JSONObject json = new JSONObject(s);
+
+			if (json.has("error"))
+				return 0;
+
+			if (!json.has("card"))
+				return 0;
+
+			else
+				return json.getJSONObject("card").getInt("balance");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
 	boolean validateToken(BankObject bank, String token, String pin, String card) {
