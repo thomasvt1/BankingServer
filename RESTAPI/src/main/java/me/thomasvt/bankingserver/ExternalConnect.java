@@ -20,31 +20,41 @@ public class ExternalConnect {
 
 		ExternalConnect http = new ExternalConnect();
 
-		BankObject SOFA = new Bank().SOFA;
-		String card = "17393F25";
-		String pin = "1111";
+		BankObject BANK = new Bank().BANA;
+		//String card = "17393F25";
+		//String pin = "1111";
+		String card = "9D47F835";
+		String pin = "1234";
 
 		// TESTING 1 - REQUEST TOKEN
 
 		System.out.println("Testing 1 - Send Http GET - request token");
 
-		String token = http.getToken(SOFA);
+		String token = http.getToken(BANK);
 
 		System.out.println(token);
+		
+		// TESTING 1 - REQUEST TOKEN
+
+		System.out.println("Testing 2 - Send Http GET - card exists");
+
+		boolean exists = http.cardExists(BANK, card);
+
+		System.out.println(exists);
 
 		// TESTING 2 - VALIDATE TOKEN
 
 		System.out.println("\nTesting 2 - Send Http GET - validate token");
 
-		boolean validated = http.validateToken(SOFA, token, pin, card);
+		boolean validated = http.validateToken(BANK, token, pin, card);
 
 		System.out.println(validated);
 		
-		// TESTING 3 - VALIDATE TOKEN
+		// TESTING 3 - GET BALANCE
 
 		System.out.println("\nTesting 3 - Send Http GET - get balance");
 
-		int balance = http.getBalance(SOFA, token, card);
+		int balance = http.getBalance(BANK, token, pin, card);
 
 		System.out.println(balance);
 
@@ -52,7 +62,7 @@ public class ExternalConnect {
 
 		System.out.println("\nTesting 4 - Send Http POST - withdraw");
 
-		boolean withdrawn = http.withdrawMoney(SOFA, card, token, "-100");
+		boolean withdrawn = http.withdrawMoney(BANK, card, pin, token, "-100");
 
 		System.out.println(withdrawn);
 
@@ -80,9 +90,10 @@ public class ExternalConnect {
 		return null;
 	}
 	
-	int getBalance(BankObject bank, String token, String card) {
+	int getBalance(BankObject bank, String token, String pin, String card) {
 		Map<String, String> get = new HashMap<String, String>();
 		get.put("Token", token);
+		get.put("Pin", pin);
 
 		try {
 			String suffix = "/card/{CARD}/balance";
@@ -134,11 +145,34 @@ public class ExternalConnect {
 		}
 		return false;
 	}
+	
+	boolean cardExists(BankObject bank, String card) {
+		Map<String, String> get = new HashMap<String, String>();
 
-	boolean withdrawMoney(BankObject bank, String card, String token, String amount) {
+		try {
+			String suffix = "/card/{CARD}/exists";
+			suffix = suffix.replace("{CARD}", card);
+
+			String s = sendGet(bank, suffix, get);
+
+			JSONObject json = new JSONObject(s);
+
+			if (json.has("error"))
+				return false;
+
+			else if (json.has("card"))
+				return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	boolean withdrawMoney(BankObject bank, String card, String pin, String token, String amount) {
 		Map<String, String> get = new HashMap<String, String>();
 		get.put("Token", token);
 		get.put("Amount", amount);
+		get.put("Pin", pin);
 
 		try {
 			String suffix = "/card/{CARD}/balance";
