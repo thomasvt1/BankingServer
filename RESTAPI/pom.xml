@@ -55,7 +55,6 @@
 			<version>4.5.2</version>
 		</dependency>
 
-
 		<!-- ADD HTTP2 support -->
 
 		<dependency>

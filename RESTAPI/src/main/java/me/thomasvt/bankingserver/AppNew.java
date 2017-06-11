@@ -47,7 +47,7 @@ public class AppNew {
 			ApiHandler api = new ApiHandler();
 			return api.handle(req);
 		});
-
+		
 		/*
 		 * Returns a token when requested
 		 */
