@@ -1,7 +1,7 @@
 package me.thomasvt.bankingserver;
 
 /*
- * The AtmManager will keep track of ATM activity.
+ * The AtmManager will keep track of all ATM activity.
  * For example, but not limited to: bills in the ATM, last ping to server.
  * 
  */
