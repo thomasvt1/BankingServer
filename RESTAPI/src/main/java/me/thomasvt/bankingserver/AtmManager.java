@@ -15,14 +15,18 @@ public class AtmManager {
 	public static void main(String[] args) {
 		AtmManager atm = new AtmManager();
 		
-		String ATMNAME = "THOMAS1";
+		String ATMNAME = "THOMAS6";
 		
 		JSONObject x = atm.getMoneyStatus(ATMNAME);
 		
-		System.out.println("~~~ ATM " + ATMNAME + " status ~~~");
-		System.out.println("10: " + x.getInt("10"));
-		System.out.println("20: " + x.getInt("20"));
-		System.out.println("50: " + x.getInt("50"));
+		if (x != null && x.length() != 0) {
+
+			System.out.println("~~~ ATM " + ATMNAME + " status ~~~");
+			System.out.println("10: " + x.getInt("10"));
+			System.out.println("20: " + x.getInt("20"));
+			System.out.println("50: " + x.getInt("50"));
+
+		}
 		
 		atm.updateLastping(ATMNAME);
 	}
@@ -51,12 +55,32 @@ public class AtmManager {
 		return json;
 	}
 	
+	//SELECT `id` FROM `atm` WHERE `name` LIKE 'THOMAS1'
+	boolean atmExists(String ATMNAME) {
+		String sql = "SELECT `id` FROM `atm` WHERE `name` LIKE '"+ATMNAME+"'";
+		String s = App.getDatabase().selectStatement(sql);
+
+		return s != null;
+	}
+	
+	
+	//INSERT INTO `atm` (`id`, `name`) VALUES (NULL, 'BOOPS');
+	void addAtm(String ATMNAME) {
+		String sql = "INSERT INTO `atm` (`id`, `name`) VALUES (NULL, '"+ATMNAME+"');";
+		System.out.println("Added new ATM: " + ATMNAME);
+
+		App.getDatabase().createStatement(sql);
+	}
+	
 	//UPDATE `atm` SET `lastping`= CURRENT_TIMESTAMP WHERE `name` LIKE 'THOMAS1'
 	
 	void updateLastping(String ATMNAME) {
 		String sql = "UPDATE `atm` SET `lastping`= CURRENT_TIMESTAMP WHERE `name` LIKE '"+ATMNAME+"'";
+		
+		if (!atmExists(ATMNAME))
+			addAtm(ATMNAME);
+			
 
 		App.getDatabase().createStatement(sql);
 	}
-
 }
