@@ -51,7 +51,6 @@ public class TokenManager {
 		String sql = "UPDATE `token` SET `authed` = '1' WHERE `token`.`token` = '" + token + "'";
 
 		App.getDatabase().createStatement(sql);
-
 	}
 
 	public boolean authToken(String id, String secret) {
