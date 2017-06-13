@@ -20,7 +20,7 @@ public class ExternalConnect {
 
 		ExternalConnect http = new ExternalConnect();
 
-		BankObject BANK = new Bank().getBankObject("BANA");
+		BankObject BANK = new Bank().getBankObject("PBVS");
 		//String card = "17393F25";
 		//String pin = "1111";
 		String card = "9D47F835";
@@ -36,15 +36,18 @@ public class ExternalConnect {
 		
 		// TESTING 1 - REQUEST TOKEN
 
-		System.out.println("Testing 2 - Send Http GET - card exists");
+		System.out.println("\nTesting 2a - Send Http GET - card exists");
 
 		boolean exists = http.cardExists(BANK, card);
 
 		System.out.println(exists);
 
 		// TESTING 2 - VALIDATE TOKEN
+		
+		if (!exists)
+			return;
 
-		System.out.println("\nTesting 2 - Send Http GET - validate token");
+		System.out.println("\nTesting 2b - Send Http GET - validate token");
 
 		boolean validated = http.validateToken(BANK, token, pin, card);
 
@@ -65,6 +68,8 @@ public class ExternalConnect {
 		boolean withdrawn = http.withdrawMoney(BANK, card, pin, token, "-100");
 
 		System.out.println(withdrawn);
+		
+		//main(null);
 
 	}
 
@@ -161,7 +166,8 @@ public class ExternalConnect {
 				return false;
 
 			else if (json.has("card"))
-				return true;
+				if (json.getJSONObject("card").getBoolean("exists"))
+					return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

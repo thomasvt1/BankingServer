@@ -12,9 +12,8 @@ public class App {
 
 	public static void main(String[] args) {
 		System.out.println("Starting...");
-		db = new Database();
-		db.startConnection();
-		db.printStatusOfConnection();
+		
+		connectDatabase();
 
 		new AppNew().main(args);
 
@@ -22,6 +21,12 @@ public class App {
 		timer.schedule(new TokenTimer(), 1000, 60000);
 
 		new Commands().keepServiceOn();
+	}
+	
+	static void connectDatabase() {
+		db = new Database();
+		db.startConnection();
+		db.printStatusOfConnection();
 	}
 
 	protected static Database getDatabase() {
