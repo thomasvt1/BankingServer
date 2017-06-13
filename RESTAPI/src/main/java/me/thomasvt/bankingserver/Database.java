@@ -49,14 +49,14 @@ public class Database {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		executeDummyQuery();
+		//executeDummyQuery();
 		return conn;
 	}
 
 	/*
 	 * This method executes a dummy query on the database to make sure the
 	 * connection is still alive.
-	 */
+	 
 	private void executeDummyQuery() {
 		if (!shouldRunDummy())
 			return;
@@ -66,6 +66,7 @@ public class Database {
 		} catch (Exception e) {
 		}
 	}
+	
 
 	private long lastRunTime = 60000; // 1 minute
 
@@ -80,7 +81,7 @@ public class Database {
 
 		return shouldRun;
 	}
-
+	 */
 	Statement getStmt() {
 		try {
 			if (getConn().isClosed())

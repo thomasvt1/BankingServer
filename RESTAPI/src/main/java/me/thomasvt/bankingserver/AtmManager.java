@@ -15,17 +15,16 @@ public class AtmManager {
 	public static void main(String[] args) {
 		AtmManager atm = new AtmManager();
 		
-		String ATMNAME = "THOMAS6";
+		String ATMNAME = "THOMAS1";
 		
 		JSONObject x = atm.getMoneyStatus(ATMNAME);
 		
+		System.out.println(x);
+		
 		if (x != null && x.length() != 0) {
-
-			System.out.println("~~~ ATM " + ATMNAME + " status ~~~");
 			System.out.println("10: " + x.getInt("10"));
 			System.out.println("20: " + x.getInt("20"));
 			System.out.println("50: " + x.getInt("50"));
-
 		}
 		
 		atm.updateLastping(ATMNAME);
@@ -79,7 +78,6 @@ public class AtmManager {
 		
 		if (!atmExists(ATMNAME))
 			addAtm(ATMNAME);
-			
 
 		App.getDatabase().createStatement(sql);
 	}

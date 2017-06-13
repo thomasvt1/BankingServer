@@ -236,6 +236,24 @@ public class AppNew {
 			return json;
 		});
 
+		get("/ping/:ATM", (req, res) -> {
+			Map<String, String> map = requestToMap(req);
+			
+			String clientid = req.headers("Client-Id");
+			String clientsecret = req.headers("Client-Secret");
+			
+			JSONObject auth = bankPrivileged(clientid, clientsecret);
+			
+			if (auth != null)
+				return auth;
+			
+			AtmManager atm = new AtmManager();
+			
+			atm.updateLastping(map.get("ATM"));
+			
+			return atm.getMoneyStatus(map.get("ATM"));
+		});
+		
 		get("*", (req, res) -> {
 			return "Welcome to SOFA bank!";
 		});
@@ -297,6 +315,24 @@ public class AppNew {
 
 		else if (!tm.tokenValidated(token) && validated)
 			return new Tools().getJsonWithError(8, "token not validated");
+		return null;
+	}
+	
+	/*
+	 * Returns a JSONObject with an error or will return null
+	 * (token, ip, should check if token is validated)
+	 */
+	private static JSONObject bankPrivileged(String clientid, String clientsecret) {
+		
+		if (clientid == null || clientsecret == null)
+			return new Tools().getJsonWithError(8, "no token provided");
+		
+		else if (!tm.authToken(clientid, clientsecret))
+			return new Tools().getJsonWithError(8, "clientid or secret not correct"); 
+
+		else if (!tm.bankPrivileged(clientid))
+			return new Tools().getJsonWithError(8, "token not privilleged");
+		
 		return null;
 	}
 

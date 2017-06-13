@@ -20,7 +20,7 @@ public class ExternalConnect {
 
 		ExternalConnect http = new ExternalConnect();
 
-		BankObject BANK = new Bank().BANA;
+		BankObject BANK = new Bank().getBankObject("BANA");
 		//String card = "17393F25";
 		//String pin = "1111";
 		String card = "9D47F835";
