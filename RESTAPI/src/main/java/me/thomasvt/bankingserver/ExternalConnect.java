@@ -176,12 +176,12 @@ public class ExternalConnect {
 			String s = sendGet(bank, suffix, get);
 
 			JSONObject json = new JSONObject(s);
-
+			
 			if (json.has("error") | !json.has("card"))
 				return false;
-
+			
 			else
-				return json.getJSONObject("card").getBoolean("tries");
+				return json.getJSONObject("card").getBoolean("enabled");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -320,7 +320,7 @@ public class ExternalConnect {
 			result.append(line);
 		}
 
-		//System.out.println(result.toString());
+		System.out.println(result.toString());
 
 		return result.toString();
 

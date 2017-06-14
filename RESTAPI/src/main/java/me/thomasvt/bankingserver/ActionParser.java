@@ -12,6 +12,7 @@ class ActionParser {
 
 		String action = parameters.get("action");
 		String cardid = parameters.get("user");
+		String pin = parameters.get("pin");
 		
 		if (action.matches("cardCheck"))
 			return new CardCheck().cardExists(parameters);
@@ -21,6 +22,11 @@ class ActionParser {
 		
 		if (!cardlocal)
 			remotebank = App.getEx().isRemoteCard(cardid);
+		
+		if (pin == null)
+			return new Tools().getJsonWithError(99, "No pin provided");
+		if (cardid == null)
+			return new Tools().getJsonWithError(99, "No user provided");
 		
 		if (remotebank != null) {
 			// Run if the card is a remote card
@@ -79,10 +85,22 @@ class ActionParser {
 		}
 		 */
 		
-		if (action.matches("getBalance"))
-			return new ActionGetBalance().getBalance(parameters);
-		if (action.matches("withdrawMoney"))
-			return new ActionWithdrawMoney().withdrawMoney(parameters);
+		if (remotebank == null) {
+			if (action.matches("getBalance"))
+				return new ActionGetBalance().getBalance(parameters);
+			if (action.matches("withdrawMoney"))
+				return new ActionWithdrawMoney().withdrawMoney(parameters);
+		}
+		
+		else {
+			//parameters.get("pin")
+			String decryptedpin = new Tools().decryptPin(parameters.get("pin"));
+			
+			if (action.matches("getBalance"))
+				return new ActionGetBalance().getBalance(remotebank, decryptedpin, cardid);
+			if (action.matches("withdrawMoney"))
+				return new ActionWithdrawMoney().withdrawMoney(remotebank, decryptedpin, cardid);
+		}
 
 		return new JSONObject().put("error", "invalid action");
 	}

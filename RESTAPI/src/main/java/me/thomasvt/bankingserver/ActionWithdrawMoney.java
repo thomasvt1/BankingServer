@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
+import me.thomasvt.bankingserver.Bank.BankObject;
+
 class ActionWithdrawMoney {
 
 	public JSONObject withdrawMoney(Map<String, String> parameters) {
@@ -61,5 +63,11 @@ class ActionWithdrawMoney {
 		json.put("transaction", x);
 
 		return json;
+	}
+
+	public JSONObject withdrawMoney(BankObject remotebank, String pin, String cardid) {
+		System.out.println("TODO: Withdraw money");
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

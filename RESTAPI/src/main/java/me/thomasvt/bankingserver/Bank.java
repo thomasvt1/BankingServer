@@ -29,7 +29,7 @@ public class Bank {
 		{
 			//put("SOFA", SOFA);
 			put("BANA", BANA);
-			//put("WANK", WANK);
+			put("WANK", WANK);
 			put("RBMB", RBMB);
 			//put("PBVS", PBVS);
 		}

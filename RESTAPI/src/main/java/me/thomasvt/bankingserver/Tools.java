@@ -8,6 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 public class Tools {
+	
+	private final String ENCRYPTKEY = "gXbB9%kXrg6cxh#y";
 
 	/*
 	 * Returns the auth status of the user. 0: Pin OK 1: No user provided 2: No
@@ -156,12 +158,16 @@ public class Tools {
 			if (saltedPin.matches(pinHash))
 				auth = true;
 		} else {
-			String decryptedPin = new Encryption("gXbB9%kXrg6cxh#y").tryDecrypt(pin);
+			String decryptedPin = new Encryption(ENCRYPTKEY).tryDecrypt(pin);
 			String saltedPin = getSaltedPin(user, carduuid, decryptedPin);
 			if (saltedPin.matches(pinHash))
 				auth = true;
 		}
 		return auth;
+	}
+	
+	String decryptPin(String pin) {
+		return new Encryption(ENCRYPTKEY).tryDecrypt(pin);
 	}
 
 	boolean matchRequestKey(String providedKey) {
