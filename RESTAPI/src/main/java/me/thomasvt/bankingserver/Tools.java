@@ -24,8 +24,11 @@ public class Tools {
 
 		boolean auth = pinCorrect(cardid, pin);
 
-		if (auth)
+		if (auth) {
+			new UserManagement().resetTries(cardid);
 			return 0; // OK
+		}
+			
 		else
 			return 4; // pin incorrect
 	}

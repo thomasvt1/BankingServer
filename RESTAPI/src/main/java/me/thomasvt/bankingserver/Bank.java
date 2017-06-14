@@ -27,9 +27,9 @@ public class Bank {
 	final Map<String, BankObject> map = new HashMap<String, BankObject>() {
 		private static final long serialVersionUID = 1L;
 		{
-			put("SOFA", SOFA);
+			//put("SOFA", SOFA);
 			put("BANA", BANA);
-			put("WANK", WANK);
+			//put("WANK", WANK);
 			put("RBMB", RBMB);
 			//put("PBVS", PBVS);
 		}

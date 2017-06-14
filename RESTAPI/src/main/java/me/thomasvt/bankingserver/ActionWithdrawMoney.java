@@ -32,27 +32,33 @@ class ActionWithdrawMoney {
 
 	public JSONObject withdrawMoney(double amountToWithdraw, String cardid) {
 		double balance = new UserManagement().getBalance(cardid);
+		
+		JSONObject error = null;
 
 		if (balance < amountToWithdraw)
-			return new Tools().getJsonWithError(99, "not enough balance");
-		if (amountToWithdraw < 0)
-			return new Tools().getJsonWithError(99, "can not add money to account");
-		if (amountToWithdraw < 1)
-			return new Tools().getJsonWithError(99, "cannot remove too small amount");
+			error = new Tools().getJsonWithError(21, "not enough balance");
+		else if (amountToWithdraw < 0)
+			error = new Tools().getJsonWithError(99, "can not add money to account");
+		else if (amountToWithdraw < 1)
+			error = new Tools().getJsonWithError(99, "cannot remove too small amount");
+		
+		if (error != null) {
+			JSONObject x = new JSONObject();
+			
+			x.put("success", false);
+
+			error.put("transaction", x);
+		}
 
 		new UserManagement().removeMoney(cardid, amountToWithdraw);
-
-		int finalmoney = (int) ((balance - amountToWithdraw) * 100);
 
 		JSONObject json = new JSONObject();
 
 		JSONObject x = new JSONObject();
+		
+		x.put("success", true);
 
-		x.put("id", cardid);
-		x.put("balance", finalmoney + "");
-		x.put("response", "success");
-
-		json.put("card", x);
+		json.put("transaction", x);
 
 		return json;
 	}

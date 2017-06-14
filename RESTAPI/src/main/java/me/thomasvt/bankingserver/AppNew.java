@@ -105,7 +105,7 @@ public class AppNew {
 			UserManagement um = new UserManagement();
 
 			if (!um.cardExists(card))
-				return new Tools().getJsonWithError(99, "card does not exist");
+				return new Tools().getJsonWithError(22, "card does not exist");
 
 			JSONObject json = new JSONObject();
 
@@ -193,7 +193,7 @@ public class AppNew {
 			int authtry = new Tools().authUser(card, pin);
 
 			if (um.cardBlocked(card))
-				return new Tools().getJsonWithError(99, "card blocked");
+				return new Tools().getJsonWithError(18, "card blocked");
 
 			if (authtry != 0) {
 
@@ -202,7 +202,7 @@ public class AppNew {
 				int tries = um.getTries(card);
 
 				if (tries == 3) {
-					JSONObject json = new Tools().getJsonWithError(99, "card blocked");
+					JSONObject json = new Tools().getJsonWithError(18, "card blocked");
 
 					json.getJSONObject("error").put("tries", 3);
 
