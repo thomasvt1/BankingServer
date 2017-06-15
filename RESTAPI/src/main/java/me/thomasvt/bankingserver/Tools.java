@@ -170,7 +170,12 @@ public class Tools {
 		if (pin.length() == 4)
 			return pin;
 		else
-			return new Encryption(ENCRYPTKEY).tryDecrypt(pin);
+			try {
+				return new Encryption(ENCRYPTKEY).decrypt(pin);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		return pin;
 	}
 
 	boolean matchRequestKey(String providedKey) {

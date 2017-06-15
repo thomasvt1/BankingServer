@@ -305,6 +305,7 @@ public class ExternalConnect {
 		HttpGet request = new HttpGet(url);
 
 		for (Map.Entry<String, String> entry : map.entrySet()) {
+			System.out.println("Header: " + entry.getKey() + "/" + entry.getValue());
 			request.addHeader(entry.getKey(), entry.getValue());
 		}
 
@@ -336,6 +337,7 @@ public class ExternalConnect {
 
 		// Add header
 		for (Map.Entry<String, String> entry : map.entrySet()) {
+			System.out.println("Header: " + entry.getKey() + "/" + entry.getValue());
 			post.addHeader(entry.getKey(), entry.getValue());
 		}
 

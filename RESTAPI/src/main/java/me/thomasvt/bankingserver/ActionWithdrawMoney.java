@@ -67,6 +67,10 @@ class ActionWithdrawMoney {
 
 	public JSONObject withdrawMoney(BankObject remotebank, String pin, String cardid) {
 		System.out.println("TODO: Withdraw money");
+		
+		
+		
+		
 		// TODO Auto-generated method stub
 		return null;
 	}

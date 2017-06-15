@@ -38,11 +38,19 @@ class ActionParser {
 			if (!enabled)
 				return new JSONObject().put("error", "card blocked").put("tries", 3);
 			
-			boolean auth = ec.validateToken(remotebank, parameters.get("pin"), cardid);
+			String decryptedpin = new Tools().decryptPin(parameters.get("pin"));
+			System.out.println("PIN: " + pin + " / " + decryptedpin);
+			
+			boolean auth = ec.validateToken(remotebank, decryptedpin, cardid);
 			
 			if (!auth) {
 				int tries = ec.getTries(remotebank, cardid);
-				return new JSONObject().put("error", "card blocked").put("tries", tries);
+				JSONObject response = new JSONObject();
+				
+				response.put("tries", tries);
+				response.put("error", "external card auth went wrong");
+				
+				return response;
 			}
 		}
 		
@@ -72,19 +80,6 @@ class ActionParser {
 			}
 		}
 
-		/*
-		boolean cardExists = new UserManagement().cardExists(cardid);
-
-		//Check if card is blocked
-		if (remotecard) {
-			if (new ExternalConnect().cardEnabled(remotebank, cardid))
-				return new JSONObject().put("error", "card blocked");
-		} else {
-			if (new UserManagement().cardBlocked(cardid))
-				return new JSONObject().put("error", "card blocked");
-		}
-		 */
-		
 		if (remotebank == null) {
 			if (action.matches("getBalance"))
 				return new ActionGetBalance().getBalance(parameters);
@@ -93,8 +88,8 @@ class ActionParser {
 		}
 		
 		else {
-			//parameters.get("pin")
 			String decryptedpin = new Tools().decryptPin(parameters.get("pin"));
+			System.out.println("PIN: " + pin + " / " + decryptedpin);
 			
 			if (action.matches("getBalance"))
 				return new ActionGetBalance().getBalance(remotebank, decryptedpin, cardid);
