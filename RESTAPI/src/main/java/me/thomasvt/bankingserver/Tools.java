@@ -167,7 +167,10 @@ public class Tools {
 	}
 	
 	String decryptPin(String pin) {
-		return new Encryption(ENCRYPTKEY).tryDecrypt(pin);
+		if (pin.length() == 4)
+			return pin;
+		else
+			return new Encryption(ENCRYPTKEY).tryDecrypt(pin);
 	}
 
 	boolean matchRequestKey(String providedKey) {

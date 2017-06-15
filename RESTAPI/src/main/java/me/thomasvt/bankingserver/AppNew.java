@@ -183,8 +183,10 @@ public class AppNew {
 			if (auth != null)
 				return auth;
 			
+			/*
 			if (tm.tokenValidated(token))
 				return new Tools().getJsonWithError(99, "token already verified!");
+*/
 
 			String card = map.get("uuid");
 
@@ -196,7 +198,6 @@ public class AppNew {
 				return new Tools().getJsonWithError(18, "card blocked");
 
 			if (authtry != 0) {
-
 				um.increaseTries(card);
 
 				int tries = um.getTries(card);

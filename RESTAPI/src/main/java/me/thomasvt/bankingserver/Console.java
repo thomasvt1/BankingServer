@@ -1,3 +1,4 @@
+
 package me.thomasvt.bankingserver;
 
 public class Console {
