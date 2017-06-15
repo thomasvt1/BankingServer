@@ -61,7 +61,6 @@ public class Database {
 		if (!shouldRunDummy())
 			return;
 		try {
-			Console.writeLine("Dummy SQL is running!");
 			selectStatement("SELECT `userid` FROM `log` WHERE `logid` = 1");
 		} catch (Exception e) {
 		}
