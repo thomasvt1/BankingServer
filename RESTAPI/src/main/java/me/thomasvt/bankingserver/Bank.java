@@ -36,7 +36,7 @@ public class Bank {
 			put("WANK", WANK);
 			put("RBMB", RBMB);
 			put("PBVS", PBVS);
-			//put("PSYB", PSYB);
+			put("PSYB", PSYB);
 			put("MOGE", MOGE);
 		}
 	};
