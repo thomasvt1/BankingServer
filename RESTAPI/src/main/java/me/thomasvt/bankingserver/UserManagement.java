@@ -119,7 +119,7 @@ class UserManagement {
 
 	int getTries(String cardid) {
 		String sql = "SELECT `tries` FROM `card` WHERE `carduuid` = '" + cardid + "'";
-
+		
 		return Integer.parseInt(App.getDatabase().selectStatement(sql));
 	}
 

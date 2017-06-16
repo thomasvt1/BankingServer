@@ -95,7 +95,7 @@ public class AppNew {
 
 			String token = req.headers("Token");
 
-			JSONObject auth = authToken(token, getIp(req), false);
+			JSONObject auth = authToken(token, getIp(req));
 
 			if (auth != null)
 				return auth;
@@ -123,13 +123,18 @@ public class AppNew {
 			Map<String, String> map = requestToMap(req);
 
 			String token = req.headers("Token");
+			String pin = req.headers("Pin");
 
-			JSONObject auth = authToken(token, getIp(req), true);
+			JSONObject auth = authToken(token, getIp(req));
 
 			if (auth != null)
 				return auth;
-
+			
 			String card = map.get("uuid");
+			
+			JSONObject pincheck = new Tools().authPin(card, pin);
+			if (pincheck != null)
+				return pincheck;
 
 			JSONObject json = new JSONObject();
 
@@ -146,30 +151,37 @@ public class AppNew {
 			Map<String, String> map = requestToMap(req);
 
 			String token = req.headers("Token");
+			String pin = req.headers("Pin");
 
-			JSONObject auth = authToken(token, getIp(req), true);
+			JSONObject auth = authToken(token, getIp(req));
 
 			if (auth != null)
 				return auth;
-
+			
 			String card = map.get("uuid");
 			String amount = req.headers("Amount");
-
-			double amnt = 0;
-
+			
+			JSONObject pincheck = new Tools().authPin(card, pin);
+			if (pincheck != null)
+				return pincheck;
+			
 			try {
 				int x = Integer.parseInt(amount);
+				double amnt = 0;
 
 				amnt = x / 100.0;
-
+				
 				if (amnt > 0)
 					return new Tools().getJsonWithError(99, "You are not authorized to add money to the acccount");
+				
 				amnt = amnt * -1;
+				
+				return new ActionWithdrawMoney().withdrawMoney(amnt, card);
 			} catch (Exception e) {
 				return new Tools().getJsonWithError(99, "Amount specified not int");
 			}
 
-			return new ActionWithdrawMoney().withdrawMoney(amnt, card);
+			
 		});
 
 		get("/card/:UUID/validate", (req, res) -> {
@@ -178,49 +190,16 @@ public class AppNew {
 			String token = req.headers("Token");
 			String pin = req.headers("Pin");
 
-			JSONObject auth = authToken(token, getIp(req), false);
+			JSONObject auth = authToken(token, getIp(req));
 
 			if (auth != null)
 				return auth;
 			
-			/*
-			if (tm.tokenValidated(token))
-				return new Tools().getJsonWithError(99, "token already verified!");
-*/
-
 			String card = map.get("uuid");
 
-			UserManagement um = new UserManagement();
-
-			int authtry = new Tools().authUser(card, pin);
-
-			if (um.cardBlocked(card))
-				return new Tools().getJsonWithError(18, "card blocked");
-
-			if (authtry != 0) {
-				um.increaseTries(card);
-
-				int tries = um.getTries(card);
-
-				if (tries == 3) {
-					JSONObject json = new Tools().getJsonWithError(18, "card blocked");
-
-					json.getJSONObject("error").put("tries", 3);
-
-					return json;
-				}
-
-				JSONObject json = new JSONObject();
-
-				JSONObject x = new JSONObject();
-
-				x.put("tries", tries);
-				x.put("message", new Tools().getErrorMessage(authtry));
-
-				json.put("error", x);
-
-				return json;
-			}
+			JSONObject pincheck = new Tools().authPin(card, pin);
+			if (pincheck != null)
+				return pincheck;
 
 			new TokenManager().validateToken(token);
 
@@ -250,9 +229,42 @@ public class AppNew {
 			
 			AtmManager atm = new AtmManager();
 			
-			atm.updateLastping(map.get("ATM"));
+			atm.updateLastping(map.get("atm"));
 			
-			return atm.getMoneyStatus(map.get("ATM"));
+			return atm.getMoneyStatus(map.get("atm"));
+		});
+		
+		get("/bills/:ATM", (req, res) -> {
+			Map<String, String> map = requestToMap(req);
+			
+			String clientid = req.headers("Client-Id");
+			String clientsecret = req.headers("Client-Secret");
+			
+			String ATMNAME = map.get("atm");
+			
+			if (req.headers("Ten") == null || req.headers("Twenty") == null || req.headers("Fifty") == null)
+				return new Tools().getJsonWithError(99, "Specify all values");
+			
+			int ten = Integer.parseInt(req.headers("Ten"));
+			int twenty = Integer.parseInt(req.headers("Twenty"));
+			int fifty = Integer.parseInt(req.headers("Fifty"));
+			
+			JSONObject auth = bankPrivileged(clientid, clientsecret);
+			
+			if (auth != null)
+				return auth;
+			
+			AtmManager atm = new AtmManager();
+			
+			atm.updateLastping(ATMNAME);
+			
+			if (req.headers("Add") == null)
+				atm.removeMoney(ATMNAME, ten, twenty, fifty);
+			else
+				atm.addMoney(ATMNAME, ten, twenty, fifty);
+				
+			
+			return atm.getMoneyStatus(ATMNAME);
 		});
 		
 		get("*", (req, res) -> {
@@ -302,20 +314,16 @@ public class AppNew {
 	 * Returns a JSONObject with an error or will return null
 	 * (token, ip, should check if token is validated)
 	 */
-	private static JSONObject authToken(String token, String ip, boolean validated) {
-		
+	private static JSONObject authToken(String token, String ip) {
 		if (token == null)
 			return new Tools().getJsonWithError(8, "no token provided");
 		
 		else if (!tm.tokenInDatabase(token))
 			return new Tools().getJsonWithError(8, "token not in database");
-		
+
 		else if (ip != null)
 			if (!ip.matches(tm.getIp(token)))
 				return new Tools().getJsonWithError(8, "token validated on different ip"); 
-
-		else if (!tm.tokenValidated(token) && validated)
-			return new Tools().getJsonWithError(8, "token not validated");
 		return null;
 	}
 	

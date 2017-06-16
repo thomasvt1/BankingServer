@@ -11,25 +11,6 @@ import org.json.JSONObject;
  */
 
 public class AtmManager {
-	
-	public static void main(String[] args) {
-		AtmManager atm = new AtmManager();
-		
-		String ATMNAME = "THOMAS1";
-		
-		JSONObject x = atm.getMoneyStatus(ATMNAME);
-		
-		System.out.println(x);
-		
-		if (x != null && x.length() != 0) {
-			System.out.println("10: " + x.getInt("10"));
-			System.out.println("20: " + x.getInt("20"));
-			System.out.println("50: " + x.getInt("50"));
-		}
-		
-		atm.updateLastping(ATMNAME);
-	}
-	
 	JSONObject getMoneyStatus(String ATMNAME) {
 		String sql = "SELECT * FROM `atm` WHERE `name` LIKE '"+ATMNAME+"'";
 		
@@ -38,9 +19,9 @@ public class AtmManager {
 		try {
 			ResultSet rs = App.getDatabase().getStmt().executeQuery(sql);
 			while (rs.next()) {
-				amnt10 = rs.getString("10");
-				amnt20 = rs.getString("20");
-				amnt50 = rs.getString("50");
+				amnt10 = rs.getString("ten");
+				amnt20 = rs.getString("twenty");
+				amnt50 = rs.getString("fifty");
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -48,9 +29,9 @@ public class AtmManager {
 		}
 		
 		JSONObject json = new JSONObject();
-		json.put("10", amnt10);
-		json.put("20", amnt20);
-		json.put("50", amnt50);
+		json.put("ten", amnt10);
+		json.put("twenty", amnt20);
+		json.put("fifty", amnt50);
 		return json;
 	}
 	
@@ -62,12 +43,39 @@ public class AtmManager {
 		return s != null;
 	}
 	
-	
 	//INSERT INTO `atm` (`id`, `name`) VALUES (NULL, 'BOOPS');
 	void addAtm(String ATMNAME) {
 		String sql = "INSERT INTO `atm` (`id`, `name`) VALUES (NULL, '"+ATMNAME+"');";
 		System.out.println("Added new ATM: " + ATMNAME);
 
+		App.getDatabase().createStatement(sql);
+	}
+	
+	private String fillBillSql(boolean add, String ATMNAME, int ten, int twenty, int fifty) {
+		String sql = "UPDATE `atm` SET `ten` = `ten` + '{10}', `twenty` = `twenty` + '{20}', `fifty` = `fifty` + '{50}' WHERE `atm`.`name` = {ID};";
+
+		sql = sql.replace("{ID}", ATMNAME);
+
+		sql = sql.replace("{10}", String.valueOf(ten));
+		sql = sql.replace("{20}", String.valueOf(twenty));
+		sql = sql.replace("{50}", String.valueOf(fifty));
+		
+		if (!add)
+			sql = sql.replaceAll("\\+", "-");
+		return sql;
+	}
+	
+	//UPDATE `atm` SET `ten` = `ten` + '20', `twenty` = `twenty` + '20', `fifty` = `fifty` + '20' WHERE `atm`.`id` = 13;
+	void addMoney(String ATMNAME, int ten, int twenty, int fifty) {
+		String sql = fillBillSql(true, ATMNAME, ten, twenty, fifty);
+		
+		App.getDatabase().createStatement(sql);
+	}
+	
+	//UPDATE `atm` SET `ten` = `ten` + '20', `twenty` = `twenty` + '20', `fifty` = `fifty` + '20' WHERE `atm`.`id` = 13;
+	void removeMoney(String ATMNAME, int ten, int twenty, int fifty) {
+		String sql = fillBillSql(false, ATMNAME, ten, twenty, fifty);
+		
 		App.getDatabase().createStatement(sql);
 	}
 	

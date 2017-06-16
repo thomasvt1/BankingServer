@@ -20,7 +20,7 @@ public class ExternalConnect {
 
 		ExternalConnect http = new ExternalConnect();
 
-		BankObject BANK = new Bank().getBankObject("SOFA");
+		BankObject BANK = new Bank().getBankObject("BANA");
 		//String card = "17393F25";
 		//String pin = "1111";
 		String card = "9D47F835";
@@ -65,7 +65,7 @@ public class ExternalConnect {
 
 		System.out.println("\nTesting 4 - Send Http POST - withdraw");
 
-		boolean withdrawn = http.withdrawMoney(BANK, card, pin, "-100");
+		boolean withdrawn = http.withdrawMoney(BANK, card, pin, -100);
 
 		System.out.println(withdrawn);
 		
@@ -271,10 +271,10 @@ public class ExternalConnect {
 		return false;
 	}
 
-	boolean withdrawMoney(BankObject bank, String card, String pin, String amount) {
+	boolean withdrawMoney(BankObject bank, String card, String pin, int amount) {
 		Map<String, String> get = new HashMap<String, String>();
 		get.put("Token", getToken(bank));
-		get.put("Amount", amount);
+		get.put("Amount", String.valueOf(amount));
 		get.put("Pin", pin);
 
 		try {
@@ -284,9 +284,14 @@ public class ExternalConnect {
 			String s = sendPost(bank, suffix, get);
 
 			JSONObject json = new JSONObject(s);
+			
+			System.out.println(json);
 
 			if (json.has("error"))
 				return false;
+			
+			if (json.has("transaction"))
+				return (json.getJSONObject("transaction").getBoolean("success"));
 
 			else if (json.has("card"))
 				return true;

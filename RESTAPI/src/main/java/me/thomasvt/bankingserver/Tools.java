@@ -10,6 +10,45 @@ import org.json.JSONObject;
 public class Tools {
 	
 	private final String ENCRYPTKEY = "gXbB9%kXrg6cxh#y";
+	
+	JSONObject authPin(String carduuid, String pin) {
+		UserManagement um = new UserManagement();
+		
+		int authtry = authUser(carduuid, pin);
+		
+		if (!um.cardExists(carduuid))
+			return new Tools().getJsonWithError(99, "card does not exist in db");
+
+		if (um.cardBlocked(carduuid))
+			return new Tools().getJsonWithError(18, "card blocked");
+
+		if (authtry != 0) {
+			um.increaseTries(carduuid);
+
+			int tries = um.getTries(carduuid);
+
+			if (tries == 3) {
+				JSONObject json = new Tools().getJsonWithError(18, "card blocked");
+
+				json.getJSONObject("error").put("tries", 3);
+
+				return json;
+			}
+
+			JSONObject json = new JSONObject();
+
+			JSONObject x = new JSONObject();
+
+			x.put("tries", tries);
+			x.put("message", new Tools().getErrorMessage(authtry));
+
+			json.put("error", x);
+
+			return json;
+		}
+		new UserManagement().resetTries(carduuid);
+		return null;
+	}
 
 	/*
 	 * Returns the auth status of the user. 0: Pin OK 1: No user provided 2: No

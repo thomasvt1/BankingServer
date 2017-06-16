@@ -93,9 +93,17 @@ class ActionParser {
 			
 			if (action.matches("getBalance"))
 				return new ActionGetBalance().getBalance(remotebank, decryptedpin, cardid);
+			
+			if (!new Tools().isDouble(parameters.get("amount")))
+				return new JSONObject().put("error", "amount not a double");
+
+			double amount = Double.parseDouble(parameters.get("amount"));
+			
 			if (action.matches("withdrawMoney"))
-				return new ActionWithdrawMoney().withdrawMoney(remotebank, decryptedpin, cardid);
+				return new ActionWithdrawMoney().withdrawMoney(remotebank, decryptedpin, cardid, amount);
 		}
+		
+		
 
 		return new JSONObject().put("error", "invalid action");
 	}
