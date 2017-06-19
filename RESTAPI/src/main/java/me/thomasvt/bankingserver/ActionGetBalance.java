@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
+import me.thomasvt.bankingserver.Bank.BankObject;
+
 class ActionGetBalance {
 
 	JSONObject getBalance(Map<String, String> parameters) {
@@ -30,5 +32,14 @@ class ActionGetBalance {
 
 	int getIntBalance(String cardid) {
 		return (int) (new UserManagement().getBalance(cardid) * 100);
+	}
+
+	JSONObject getBalance(BankObject remotebank, String pin, String carduuid) {
+		int balance = new ExternalConnect().getBalance(remotebank, pin, carduuid);
+		
+		JSONObject response = new JSONObject();
+
+		response.put("balance", balance);
+		return response;
 	}
 }

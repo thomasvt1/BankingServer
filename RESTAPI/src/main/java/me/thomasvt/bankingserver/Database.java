@@ -61,11 +61,11 @@ public class Database {
 		if (!shouldRunDummy())
 			return;
 		try {
-			Console.writeLine("Dummy SQL is running!");
 			selectStatement("SELECT `userid` FROM `log` WHERE `logid` = 1");
 		} catch (Exception e) {
 		}
 	}
+	
 
 	private long lastRunTime = 60000; // 1 minute
 
@@ -80,7 +80,7 @@ public class Database {
 
 		return shouldRun;
 	}
-
+	
 	Statement getStmt() {
 		try {
 			if (getConn().isClosed())

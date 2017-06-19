@@ -20,7 +20,7 @@ public class ExternalConnect {
 
 		ExternalConnect http = new ExternalConnect();
 
-		BankObject BANK = new Bank().BANA;
+		BankObject BANK = new Bank().getBankObject("BANA");
 		//String card = "17393F25";
 		//String pin = "1111";
 		String card = "9D47F835";
@@ -36,17 +36,20 @@ public class ExternalConnect {
 		
 		// TESTING 1 - REQUEST TOKEN
 
-		System.out.println("Testing 2 - Send Http GET - card exists");
+		System.out.println("\nTesting 2a - Send Http GET - card exists");
 
 		boolean exists = http.cardExists(BANK, card);
 
 		System.out.println(exists);
 
 		// TESTING 2 - VALIDATE TOKEN
+		
+		if (!exists)
+			return;
 
-		System.out.println("\nTesting 2 - Send Http GET - validate token");
+		System.out.println("\nTesting 2b - Send Http GET - validate token");
 
-		boolean validated = http.validateToken(BANK, token, pin, card);
+		boolean validated = http.validateToken(BANK, pin, card);
 
 		System.out.println(validated);
 		
@@ -54,7 +57,7 @@ public class ExternalConnect {
 
 		System.out.println("\nTesting 3 - Send Http GET - get balance");
 
-		int balance = http.getBalance(BANK, token, pin, card);
+		int balance = http.getBalance(BANK, pin, card);
 
 		System.out.println(balance);
 
@@ -62,13 +65,20 @@ public class ExternalConnect {
 
 		System.out.println("\nTesting 4 - Send Http POST - withdraw");
 
-		boolean withdrawn = http.withdrawMoney(BANK, card, pin, token, "-100");
+		boolean withdrawn = http.withdrawMoney(BANK, card, pin, -100);
 
 		System.out.println(withdrawn);
+		
+		//main(null);
 
 	}
 
 	String getToken(BankObject bank) {
+		
+		if (App.tokens.containsKey(bank)) {
+			return App.tokens.get(bank);
+		}
+		
 		Map<String, String> get = new HashMap<String, String>();
 		get.put("Client-Id", bank.getId());
 		get.put("Client-Secret", bank.getSecret());
@@ -81,8 +91,17 @@ public class ExternalConnect {
 			if (json.has("error"))
 				return null;
 
-			else
-				return json.getJSONObject("token").getString("id");
+			else {
+				String token = json.getJSONObject("token").getString("id");
+				App.tokens.put(bank, token);
+				int delay = (json.getJSONObject("token").getInt("expires") /2) * 1000;
+				
+				new Thread(() -> {
+					new TokenTimeout(delay, bank).start();
+				}).start();
+				
+				return token;
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -90,9 +109,89 @@ public class ExternalConnect {
 		return null;
 	}
 	
-	int getBalance(BankObject bank, String token, String pin, String card) {
+	boolean getEnabled(BankObject bank, String pin, String card) {
+		///card/:UUID/enabled
+		Map<String, String> get = new HashMap<String, String>();
+		get.put("Token", getToken(bank));
+
+		try {
+			String suffix = "/card/{CARD}/enabled";
+			suffix = suffix.replace("{CARD}", card);
+
+			String s = sendGet(bank, suffix, get);
+
+			JSONObject json = new JSONObject(s);
+
+			if (json.has("error") || !json.has("card"))
+				return false;
+
+			else
+				return json.getJSONObject("card").getBoolean("enabled");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	int getTries(BankObject bank, String card) {
+		///card/:UUID/enabled
+		String token = getToken(bank);
 		Map<String, String> get = new HashMap<String, String>();
 		get.put("Token", token);
+
+		try {
+			String suffix = "/card/{CARD}/enabled";
+			suffix = suffix.replace("{CARD}", card);
+
+			String s = sendGet(bank, suffix, get);
+
+			JSONObject json = new JSONObject(s);
+
+			if (json.has("error"))
+				return 0;
+
+			if (!json.has("card"))
+				return 0;
+
+			else
+				return json.getJSONObject("card").getInt("tries");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	boolean cardEnabled(BankObject bank, String card) {
+		///card/:UUID/enabled
+		String token = getToken(bank);
+		Map<String, String> get = new HashMap<String, String>();
+		get.put("Token", token);
+
+		try {
+			String suffix = "/card/{CARD}/enabled";
+			suffix = suffix.replace("{CARD}", card);
+
+			String s = sendGet(bank, suffix, get);
+
+			JSONObject json = new JSONObject(s);
+			
+			if (json.has("error") | !json.has("card"))
+				return false;
+			
+			else
+				return json.getJSONObject("card").getBoolean("enabled");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	int getBalance(BankObject bank, String pin, String card) {
+		Map<String, String> get = new HashMap<String, String>();
+		get.put("Token", getToken(bank));
 		get.put("Pin", pin);
 
 		try {
@@ -118,9 +217,9 @@ public class ExternalConnect {
 		return 0;
 	}
 
-	boolean validateToken(BankObject bank, String token, String pin, String card) {
+	boolean validateToken(BankObject bank, String pin, String card) {
 		Map<String, String> get = new HashMap<String, String>();
-		get.put("Token", token);
+		get.put("Token", getToken(bank));
 		get.put("Pin", pin);
 
 		try {
@@ -148,6 +247,9 @@ public class ExternalConnect {
 	
 	boolean cardExists(BankObject bank, String card) {
 		Map<String, String> get = new HashMap<String, String>();
+		
+		if (card == null)
+			System.out.println("WARNING card == null");
 
 		try {
 			String suffix = "/card/{CARD}/exists";
@@ -161,17 +263,18 @@ public class ExternalConnect {
 				return false;
 
 			else if (json.has("card"))
-				return true;
+				if (json.getJSONObject("card").getBoolean("exists"))
+					return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
 
-	boolean withdrawMoney(BankObject bank, String card, String pin, String token, String amount) {
+	boolean withdrawMoney(BankObject bank, String card, String pin, int amount) {
 		Map<String, String> get = new HashMap<String, String>();
-		get.put("Token", token);
-		get.put("Amount", amount);
+		get.put("Token", getToken(bank));
+		get.put("Amount", String.valueOf(amount));
 		get.put("Pin", pin);
 
 		try {
@@ -181,9 +284,14 @@ public class ExternalConnect {
 			String s = sendPost(bank, suffix, get);
 
 			JSONObject json = new JSONObject(s);
+			
+			System.out.println(json);
 
 			if (json.has("error"))
 				return false;
+			
+			if (json.has("transaction"))
+				return (json.getJSONObject("transaction").getBoolean("success"));
 
 			else if (json.has("card"))
 				return true;
@@ -202,6 +310,7 @@ public class ExternalConnect {
 		HttpGet request = new HttpGet(url);
 
 		for (Map.Entry<String, String> entry : map.entrySet()) {
+			System.out.println("Header: " + entry.getKey() + "/" + entry.getValue());
 			request.addHeader(entry.getKey(), entry.getValue());
 		}
 
@@ -233,6 +342,7 @@ public class ExternalConnect {
 
 		// Add header
 		for (Map.Entry<String, String> entry : map.entrySet()) {
+			System.out.println("Header: " + entry.getKey() + "/" + entry.getValue());
 			post.addHeader(entry.getKey(), entry.getValue());
 		}
 
@@ -247,7 +357,7 @@ public class ExternalConnect {
 			result.append(line);
 		}
 
-		System.out.println(result.toString());
+		//System.out.println(result.toString());
 		return result.toString();
 	}
 }

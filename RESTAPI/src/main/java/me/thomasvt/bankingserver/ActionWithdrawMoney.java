@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.json.JSONObject;
 
+import me.thomasvt.bankingserver.Bank.BankObject;
+
 class ActionWithdrawMoney {
 
 	public JSONObject withdrawMoney(Map<String, String> parameters) {
@@ -17,43 +19,87 @@ class ActionWithdrawMoney {
 		return withdrawMoney(amountToWithdraw, cardid);
 	}
 
-	public JSONObject withdrawMoney(String amountToWithdraw, String cardid) {
-
-		if (amountToWithdraw == null)
-			return new JSONObject().put("error", "amount not provided");
-
-		if (!new Tools().isDouble(amountToWithdraw))
-			return new JSONObject().put("error", "amount not a double");
-
-		double x = Double.parseDouble(amountToWithdraw);
-
-		return withdrawMoney(x, cardid);
-	}
-
 	public JSONObject withdrawMoney(double amountToWithdraw, String cardid) {
 		double balance = new UserManagement().getBalance(cardid);
+		
+		JSONObject error = null;
 
 		if (balance < amountToWithdraw)
-			return new Tools().getJsonWithError(99, "not enough balance");
-		if (amountToWithdraw < 0)
-			return new Tools().getJsonWithError(99, "can not add money to account");
-		if (amountToWithdraw < 1)
-			return new Tools().getJsonWithError(99, "cannot remove too small amount");
+			error = new Tools().getJsonWithError(21, "not enough balance");
+		else if (amountToWithdraw < 0)
+			error = new Tools().getJsonWithError(99, "can not add money to account");
+		else if (amountToWithdraw < 1)
+			error = new Tools().getJsonWithError(99, "cannot remove too small amount");
+		
+		System.out.println(error);
+		
+		if (error != null) {
+			JSONObject x = new JSONObject();
+			
+			x.put("success", false);
+
+			error.put("transaction", x);
+			return error;
+		}
 
 		new UserManagement().removeMoney(cardid, amountToWithdraw);
 
-		int finalmoney = (int) ((balance - amountToWithdraw) * 100);
-
 		JSONObject json = new JSONObject();
-
 		JSONObject x = new JSONObject();
+		
+		x.put("success", true);
 
-		x.put("id", cardid);
-		x.put("balance", finalmoney + "");
-		x.put("response", "success");
-
-		json.put("card", x);
+		json.put("transaction", x);
 
 		return json;
+	}
+
+	public JSONObject withdrawMoney(BankObject remotebank, String pin, String cardid, double amount) {
+		int balance = new ExternalConnect().getBalance(remotebank, pin, cardid);
+		
+		System.out.println("~~~~~~~~~~~~~~~~~~~~~~~");
+		System.out.println("balance: " + balance);
+		
+		JSONObject error = null;
+		
+		if (balance < amount)
+			error = new Tools().getJsonWithError(21, "not enough balance");
+		else if (amount < 0)
+			error = new Tools().getJsonWithError(99, "can not add money to account");
+		else if (amount < 1)
+			error = new Tools().getJsonWithError(99, "cannot remove too small amount");
+		
+		if (error != null)
+			return getFailedTransaction(error);
+		
+		int amountwithdraw = (int) amount *  -100;
+		
+		System.out.println("amount: " + amountwithdraw);
+		
+		
+		boolean withdraw = new ExternalConnect().withdrawMoney(remotebank, cardid, pin, amountwithdraw);
+		
+		if (!withdraw) {
+			error = new Tools().getJsonWithError(99, "API connect");
+			return getFailedTransaction(error);
+		}
+		
+		JSONObject json = new JSONObject();
+		JSONObject x = new JSONObject();
+		
+		x.put("success", true);
+
+		json.put("transaction", x);
+
+		return json;
+	}
+	
+	JSONObject getFailedTransaction(JSONObject error) {
+		JSONObject x = new JSONObject();
+		
+		x.put("success", false);
+
+		error.put("transaction", x);
+		return error;
 	}
 }

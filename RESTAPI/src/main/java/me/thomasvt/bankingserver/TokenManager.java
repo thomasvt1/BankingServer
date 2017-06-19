@@ -31,6 +31,13 @@ public class TokenManager {
 
 		return s;
 	}
+	
+	public boolean bankPrivileged(String clientid) {
+		String sql = "SELECT `privileged` FROM `banks` WHERE `id` LIKE '"+clientid+"'";
+		String s = App.getDatabase().selectStatement(sql);
+
+		return Integer.parseInt(s) == 1;
+	}
 
 	public boolean tokenValidated(String token) {
 		String sql = "SELECT `authed` FROM `token` WHERE `token` LIKE '" + token + "'";
@@ -38,13 +45,8 @@ public class TokenManager {
 
 		if (s == null)
 			return false;
-
-		int x = Integer.parseInt(s);
-
-		if (x == 0)
-			return false;
-		return true;
-
+		
+		return Integer.parseInt(s) == 1;
 	}
 
 	public void validateToken(String token) {

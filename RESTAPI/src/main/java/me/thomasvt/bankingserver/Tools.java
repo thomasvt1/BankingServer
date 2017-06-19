@@ -8,6 +8,47 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 public class Tools {
+	
+	private final String ENCRYPTKEY = "gXbB9%kXrg6cxh#y";
+	
+	JSONObject authPin(String carduuid, String pin) {
+		UserManagement um = new UserManagement();
+		
+		int authtry = authUser(carduuid, pin);
+		
+		if (!um.cardExists(carduuid))
+			return new Tools().getJsonWithError(99, "card does not exist in db");
+
+		if (um.cardBlocked(carduuid))
+			return new Tools().getJsonWithError(18, "card blocked");
+
+		if (authtry != 0) {
+			um.increaseTries(carduuid);
+
+			int tries = um.getTries(carduuid);
+
+			if (tries == 3) {
+				JSONObject json = new Tools().getJsonWithError(18, "card blocked");
+
+				json.getJSONObject("error").put("tries", 3);
+
+				return json;
+			}
+
+			JSONObject json = new JSONObject();
+
+			JSONObject x = new JSONObject();
+
+			x.put("tries", tries);
+			x.put("message", new Tools().getErrorMessage(authtry));
+
+			json.put("error", x);
+
+			return json;
+		}
+		new UserManagement().resetTries(carduuid);
+		return null;
+	}
 
 	/*
 	 * Returns the auth status of the user. 0: Pin OK 1: No user provided 2: No
@@ -24,8 +65,11 @@ public class Tools {
 
 		boolean auth = pinCorrect(cardid, pin);
 
-		if (auth)
+		if (auth) {
+			new UserManagement().resetTries(cardid);
 			return 0; // OK
+		}
+			
 		else
 			return 4; // pin incorrect
 	}
@@ -153,12 +197,24 @@ public class Tools {
 			if (saltedPin.matches(pinHash))
 				auth = true;
 		} else {
-			String decryptedPin = new Encryption("gXbB9%kXrg6cxh#y").tryDecrypt(pin);
+			String decryptedPin = new Encryption(ENCRYPTKEY).tryDecrypt(pin);
 			String saltedPin = getSaltedPin(user, carduuid, decryptedPin);
 			if (saltedPin.matches(pinHash))
 				auth = true;
 		}
 		return auth;
+	}
+	
+	String decryptPin(String pin) {
+		if (pin.length() == 4)
+			return pin;
+		else
+			try {
+				return new Encryption(ENCRYPTKEY).decrypt(pin);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		return pin;
 	}
 
 	boolean matchRequestKey(String providedKey) {
