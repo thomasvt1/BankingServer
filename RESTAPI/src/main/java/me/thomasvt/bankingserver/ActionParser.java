@@ -60,6 +60,9 @@ class ActionParser {
 			if (!cardlocal)
 				return new JSONObject().put("error", "cardid not in database");
 			
+			if (new UserManagement().cardBlocked(cardid))
+				return new JSONObject().put("error", "card blocked").put("tries", 3);
+			
 			int auth = new Tools().authUser(cardid, parameters.get("pin"));
 			
 			if (auth != 0) {
