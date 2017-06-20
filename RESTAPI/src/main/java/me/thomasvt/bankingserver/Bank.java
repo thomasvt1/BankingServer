@@ -12,7 +12,7 @@ public class Bank {
 			"60685dae-6e73-4340-970e-925b5bea54a4", "e4b25ebd-a798-430c-bd55-9c78ea39f426");
 
 	private BankObject WANK = new BankObject("WANK", "https://api.wallstreetwankers.ml",
-			"2", "cbmJLpVq53aZ");
+			"2", "f07e3becc12e6d4ab0f9b18336b3b7162816c5ef327a87a1dc681f081cce3a3d");
 
 	private BankObject RBMB = new BankObject("RMMB", "https://api.rbmbanking.ml",
 			"40ab990a-6c99-4642-97f2-1ed562df1d8d", "32601296-5686-4ae6-aa6b-21e489a02e0b");
@@ -20,9 +20,9 @@ public class Bank {
 	private BankObject PBVS = new BankObject("PPBS", "https://api.paybinvis.ml",
 			"524e957d-d588-4c95-a478-8a32dc91c739", "569d8085-9df0-495e-87db-ad0fb7a224e2");
 	
-	private BankObject MOGE = new BankObject("PSYB", "api.themoneygenerators.ml", 
-			"o2jdZbhGfapRBOOh05jsBTTi5o0yZhBYQGX04gX5HhNNUpnGJJ",
-			"aJmQ1ZX8mYbt13wYDf2rBXpSx4dkmek5Bh4eBAcjmzLhX7juLs");
+	private BankObject MOGE = new BankObject("PSYB", "https://api.themoneygenerators.ml", 
+			"JP9Ihhj5tounJVGq",
+			"xOXDH2gEIRRgP224");
 
 	private BankObject PSYB = new BankObject("PSYB", "https://api.psybank.ml/v1", 
 			"o2jdZbhGfapRBOOh05jsBTTi5o0yZhBYQGX04gX5HhNNUpnGJJ",

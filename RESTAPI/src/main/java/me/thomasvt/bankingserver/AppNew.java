@@ -256,8 +256,12 @@ public class AppNew {
 			
 			atm.updateLastping(ATMNAME);
 			
-			if (req.headers("Add") == null)
+			String money = ten + " / " + twenty + " / " + fifty;
+			
+			if (req.headers("Add") == null) {
+				System.out.println("Removing " + ten + ", ");
 				atm.removeMoney(ATMNAME, ten, twenty, fifty);
+			}
 			else
 				atm.addMoney(ATMNAME, ten, twenty, fifty);
 				
