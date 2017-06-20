@@ -61,7 +61,7 @@ public class AppNew {
 			if (!tm.authToken(clientid, clientsecret))
 				return new Tools().getJsonWithError(1, "clientid or secret not correct");
 
-			String token = tm.getNewToken(getIp(req));
+			String token = tm.getNewToken(clientid, getIp(req));
 
 			JSONObject json = new JSONObject();
 			JSONObject x = new JSONObject();
@@ -200,8 +200,6 @@ public class AppNew {
 			JSONObject pincheck = new Tools().authPin(card, pin);
 			if (pincheck != null)
 				return pincheck;
-
-			new TokenManager().validateToken(token);
 
 			JSONObject json = new JSONObject();
 

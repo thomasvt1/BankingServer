@@ -3,19 +3,25 @@ package me.thomasvt.bankingserver;
 import java.util.UUID;
 
 public class TokenManager {
-
-	public String getNewToken(String ip) {
+	
+	//INSERT INTO `token` (`token`, `time`, `ip`, `bank`) VALUES ('{UUID}', CURRENT_TIMESTAMP, '{IP}', 'SOFA');
+	//INSERT INTO `token` (`token`, `time`, `ip`, `bank`) VALUES ('{UUID}', CURRENT_TIMESTAMP, '{IP}', (SELECT `bank` FROM `banks` WHERE `id` LIKE '{ID}'));
+	public String getNewToken(String clientid, String ip) {
 		UUID randomUUID = UUID.randomUUID();
 		String UUID = randomUUID.toString();
 
-		String sql = "INSERT INTO `token` (`accountid`, `token`, `authed`, `time`, `ip`) VALUES (NULL, '{UUID}', '0', CURRENT_TIMESTAMP, '{IP}');";
+		//String sql = "INSERT INTO `token` (`accountid`, `token`, `authed`, `time`, `ip`) VALUES (NULL, '{UUID}', '0', CURRENT_TIMESTAMP, '{IP}');";
 
+		String sql = "INSERT INTO `token` (`token`, `time`, `ip`, `bank`) VALUES ('{UUID}', CURRENT_TIMESTAMP, '{IP}', (SELECT `bank` FROM `banks` WHERE `id` LIKE '{ID}'));";
+		
+		
+		sql = sql.replace("{ID}", clientid);
 		sql = sql.replace("{UUID}", UUID);
 		sql = sql.replace("{IP}", ip);
 
 		App.getDatabase().createStatement(sql);
 
-		return UUID;//
+		return UUID;
 	}
 
 	public boolean tokenInDatabase(String token) {
@@ -47,12 +53,6 @@ public class TokenManager {
 			return false;
 		
 		return Integer.parseInt(s) == 1;
-	}
-
-	public void validateToken(String token) {
-		String sql = "UPDATE `token` SET `authed` = '1' WHERE `token`.`token` = '" + token + "'";
-
-		App.getDatabase().createStatement(sql);
 	}
 
 	public boolean authToken(String id, String secret) {
