@@ -20,11 +20,11 @@ public class Bank {
 	private BankObject PBVS = new BankObject("PPBS", "https://api.paybinvis.ml",
 			"524e957d-d588-4c95-a478-8a32dc91c739", "569d8085-9df0-495e-87db-ad0fb7a224e2");
 	
-	private BankObject MOGE = new BankObject("PSYB", "api.themoneygenerators.ml/v1", 
+	private BankObject MOGE = new BankObject("PSYB", "api.themoneygenerators.ml", 
 			"o2jdZbhGfapRBOOh05jsBTTi5o0yZhBYQGX04gX5HhNNUpnGJJ",
 			"aJmQ1ZX8mYbt13wYDf2rBXpSx4dkmek5Bh4eBAcjmzLhX7juLs");
 
-	private BankObject PSYB = new BankObject("PSYB", "", 
+	private BankObject PSYB = new BankObject("PSYB", "https://api.psybank.ml/v1", 
 			"o2jdZbhGfapRBOOh05jsBTTi5o0yZhBYQGX04gX5HhNNUpnGJJ",
 			"aJmQ1ZX8mYbt13wYDf2rBXpSx4dkmek5Bh4eBAcjmzLhX7juLs");
 
